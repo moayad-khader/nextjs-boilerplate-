@@ -1,36 +1,51 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# TalkToYourData Frontend
+
+## Stack
+
+- Next.js (App Router, TypeScript)
+- TanStack Query (React Query)
+- React Context (global state)
+- TailwindCSS
+- Shadcn UI
+- pnpm
+- Biome (lint/format)
+- Highcharts (+ highcharts-react-official)
+- Zod
+- NextAuth.js
+- React Router DOM
+
+## Pages
+
+- Login
+- Organization Settings
+- User Settings
+- Organizations (list)
+- VDA (Chat) Page (chat history, chat input, messages, narrative, chart demo)
 
 ## Getting Started
 
-First, run the development server:
+### Install dependencies
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+```sh
+pnpm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Development
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```sh
+pnpm dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Lint & Format
 
-## Learn More
+```sh
+pnpm biome check . --apply
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Notes
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Uses TanStack Query and React Context for state management.
+- Shadcn UI for accessible, themeable components.
+- Highcharts demo included in VDA page.
+- NextAuth.js ready for integration.
+- React Router DOM is set up for client-side navigation in the (app) group.
