@@ -1,0 +1,14 @@
+{
+  "welcome": "مرحبا بك في TalkToYourData",
+  "login": "تسجيل الدخول",
+  "organizations": "المؤسسات",
+  "organizationSettings": "إعدادات المؤسسة",
+  "userSettings": "إعدادات المستخدم",
+  "vda": "الدردشة",
+  "chatHistory": "سجل الدردشة",
+  "userMessage": "رسالة المستخدم",
+  "agentMessage": "رسالة الوكيل",
+  "narrative": "سرد القصة",
+  "typeMessage": "اكتب رسالتك...",
+  "send": "إرسال"
+} 
