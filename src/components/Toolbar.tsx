@@ -2,6 +2,7 @@
 import {useTranslations, useLocale} from 'next-intl'
 import {Link, usePathname} from '@/i18n/navigation'
 import {LanguageSelector} from './LanguageSelector'
+import {LayoutDashboard} from 'lucide-react'
 
 const links = [
   {href: '/organizations', label: 'organizations'},
@@ -16,22 +17,36 @@ export default function Toolbar() {
   const t = useTranslations()
 
   return (
-    <nav className="w-full bg-background border-b px-4 py-2 flex gap-4 items-center shadow-sm">
-      <span className="font-bold text-lg mr-4">TalkToYourData</span>
-      {links.map(link => {
-        const isActive = pathname === link.href
-        return (
-          <Link
-            key={link.href}
-            href={link.href}
-            locale={locale}
-            className={isActive ? 'text-primary font-semibold underline' : 'text-blue-600 hover:underline'}
-            aria-current={isActive ? 'page' : undefined}
-          >
-            {t(link.label)}
-          </Link>
-        )
-      })}
+    <nav className="w-full bg-background/95 border-b px-4 py-2 flex gap-4 items-center shadow-sm backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <Link
+        href="/"
+        locale={locale}
+        className="flex items-center gap-2 font-bold text-lg mr-4 text-primary hover:text-primary/80 focus-visible:underline focus-visible:outline-none transition-colors"
+        aria-label="Go to homepage"
+      >
+        <LayoutDashboard className="w-6 h-6 text-primary" aria-hidden="true" />
+        <span>TalkToYourData</span>
+      </Link>
+      <div className="flex gap-2">
+        {links.map(link => {
+          const isActive = pathname === link.href
+          return (
+            <Link
+              key={link.href}
+              href={link.href}
+              locale={locale}
+              className={
+                isActive
+                  ? 'text-primary font-semibold underline underline-offset-4'
+                  : 'text-muted-foreground hover:text-primary focus-visible:underline focus-visible:outline-none transition-colors'
+              }
+              aria-current={isActive ? 'page' : undefined}
+            >
+              {t(link.label)}
+            </Link>
+          )
+        })}
+      </div>
       <div className="ml-auto w-40">
         <LanguageSelector />
       </div>
