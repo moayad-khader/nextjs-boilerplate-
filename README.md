@@ -39,7 +39,7 @@ pnpm dev
 ### Lint & Format
 
 ```sh
-pnpm biome check . --apply
+pnpm biome check . --write
 ```
 
 ## Notes
