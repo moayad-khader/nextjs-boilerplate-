@@ -8,7 +8,7 @@ export default function VdaPage() {
   const t = useTranslations()
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex h-screen">
       <aside className="w-64 bg-muted p-4 border-r">
         <Card>
           <CardHeader>
@@ -21,7 +21,7 @@ export default function VdaPage() {
       </aside>
       {/* Main chat area */}
       <main className="flex-1 flex flex-col">
-        <div className="flex-1 p-6 overflow-y-auto space-y-4">
+        <div className="flex-1 overflow-y-auto p-6 space-y-4">
           {/* User/Agent Messages placeholder */}
           <div className="space-y-2">
             <div className={`flex justify-end`}>
@@ -38,7 +38,7 @@ export default function VdaPage() {
             <RechartsDemo />
           </div>
         </div>
-        <form className="p-4 border-t flex gap-2">
+        <form className="p-4 border-t flex gap-2 sticky bottom-0 bg-background">
           <input
             type="text"
             className="flex-1 rounded border px-3 py-2 focus:outline-none focus:ring"
