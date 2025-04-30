@@ -1,0 +1,16 @@
+{
+  "organizations": "Organizations",
+  "userMessage": "User message",
+  "agentMessage": "Agent message",
+  "narrative": "Narrative",
+  "send": "Send",
+  "typeMessage": "Type your message",
+  "vda": "VDA",
+  "chatHistory": "Chat History",
+  "userSettings": "User Settings",
+  "organizationSettings": "Organization Settings",
+  "signInTitle": "Sign in to your account",
+  "signInWithProvider": "Sign in with Provider",
+  "login": "Login"
+  
+} 

@@ -1,0 +1,15 @@
+{
+  "organizations": "المؤسسات",
+  "userMessage": "رسالة المستخدم",
+  "agentMessage": "رسالة الوكيل",
+  "narrative": "السرد",
+  "send": "إرسال",
+  "typeMessage": "اكتب رسالتك",
+  "vda": "نظام التحليل المرئي",
+  "chatHistory": "سجل الدردشة",
+  "userSettings": "إعدادات المستخدم",
+  "organizationSettings": "إعدادات المؤسسة",
+  "signInTitle": "تسجيل الدخول إلى حسابك",
+  "signInWithProvider": "تسجيل الدخول عبر المزود",
+  "login": "تسجيل الدخول"
+} 
