@@ -45,7 +45,7 @@ export function LanguageSelector() {
       </Button>
 
       {isOpen && (
-        <div className="absolute z-10 mt-1 w-full bg-background rounded-md shadow-lg border">
+        <div className="absolute z-[100000] mt-1 w-full bg-background rounded-md shadow-lg border">
           <div className="py-1">
             {LOCALES.map(locale => (
               <button
