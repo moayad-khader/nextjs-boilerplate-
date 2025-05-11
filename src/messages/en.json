@@ -10,7 +10,15 @@
   "userSettings": "User Settings",
   "organizationSettings": "Organization Settings",
   "signInTitle": "Sign in to your account",
+  "usernameLabel": "Username or Email",
+  "passwordLabel": "Password",
+  "signInButton": "Sign In",
+  "signingIn": "Signing In...",
+  "signInError": "Invalid username or password. Please try again.",
   "signInWithProvider": "Sign in with Provider",
-  "login": "Login"
-  
+  "login": "Login",
+  "logout": "Logout",
+  "loginRequiredTitle": "Login Required",
+  "loginRequiredMessage": "You must be logged in to use the VDA.",
+  "loading": "Loading..."
 } 

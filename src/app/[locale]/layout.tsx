@@ -5,6 +5,7 @@ import '@/app/globals.css'
 import {setRequestLocale} from 'next-intl/server'
 import {routing} from '@/i18n/routing'
 import DirectionController from '@/components/DirectionController'
+import Toolbar from '@/components/Toolbar'
 
 export default async function LocaleLayout({
   children,
@@ -23,6 +24,7 @@ export default async function LocaleLayout({
   return (
     <NextIntlClientProvider locale={locale} messages={messages}>
       <DirectionController />
+      <Toolbar />
       <ClientProviders>{children}</ClientProviders>
     </NextIntlClientProvider>
   )

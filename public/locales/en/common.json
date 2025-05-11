@@ -1,6 +1,7 @@
 {
   "welcome": "Welcome to TalkToYourData",
   "login": "Login",
+  "logout": "Logout",
   "organizations": "Organizations",
   "organizationSettings": "Organization Settings",
   "userSettings": "User Settings",
