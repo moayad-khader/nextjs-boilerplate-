@@ -131,8 +131,8 @@ const handler = NextAuth({
     },
   },
   pages: {
-    signIn: '/[locale]/(auth)/login',
-    error: '/[locale]/(auth)/error',
+    signIn: '/login',
+    error: '/error',
   },
 })
 

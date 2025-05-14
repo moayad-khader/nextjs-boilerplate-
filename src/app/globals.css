@@ -45,15 +45,18 @@
 
 :root {
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
+  --primary: oklch(0.57 0.0963 192.95);         /* #058886 */
+  --secondary: oklch(0.7 0.12149 187.1451);      /* #00B5AA */
+  --background: oklch(0.96 0.0179 196.86);     /* #e6f7f7 */
+  --background-end: oklch(0.94 0.0347 187.69);  /* #d2f3ef */
+  --background-gradient: linear-gradient(135deg, var(--background) 0%, var(--background-end) 100%);
+  --button-gradient: linear-gradient(90deg, var(--primary), var(--secondary));
+  --foreground: #222;
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
+  --primary-foreground: #fff;
   --secondary-foreground: oklch(0.205 0 0);
   --muted: oklch(0.97 0 0);
   --muted-foreground: oklch(0.556 0 0);
@@ -76,6 +79,7 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+  --primary-accent: #00A3A0;
 }
 
 .dark {
@@ -112,12 +116,21 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
+.bg-gradient {
+  background: var(--background-gradient);
+}
+
+.button-gradient {
+  background: var(--button-gradient);
+}
+
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply text-foreground;
+    background: var(--background);
   }
 }
 
@@ -130,3 +143,4 @@
   direction: ltr;
   text-align: left;
 }
+

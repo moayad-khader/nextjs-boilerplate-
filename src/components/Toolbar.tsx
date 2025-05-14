@@ -21,7 +21,7 @@ export default function Toolbar() {
   const isLoggedIn = status === 'authenticated'
 
   return (
-    <nav className="w-full bg-background/95 border-b px-4 py-2 flex gap-4 items-center shadow-sm backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <nav className="w-full bg-background/95 px-4 py-2 flex gap-4 items-center shadow-sm backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <Link
         href="/"
         locale={locale}

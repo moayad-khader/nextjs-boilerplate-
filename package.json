@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "biome": "biome check . --write"
+    "biome": "biome check . --write",
+    "setup": "node -e \"const fs=require('fs');const crypto=require('crypto');const env='NEXTAUTH_SECRET='+crypto.randomBytes(32).toString('hex')+'\\nNEXTAUTH_URL=http://localhost:3000\\n';fs.writeFileSync('.env.local',env);console.log('\\x1b[32m✓\\x1b[0m Created .env.local with required variables\\n  • NEXTAUTH_SECRET\\n  • NEXTAUTH_URL')\""
   },
   "dependencies": {
     "@radix-ui/react-icons": "^1.3.2",

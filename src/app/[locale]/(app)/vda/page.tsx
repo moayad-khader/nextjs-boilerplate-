@@ -2,17 +2,14 @@
 import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card'
 import {Button} from '@/components/ui/button'
 import RechartsDemo from '@/components/RechartsDemo'
-import {useTranslations, useLocale} from 'next-intl'
+import {useTranslations} from 'next-intl'
 import {useSession, signIn} from 'next-auth/react'
-import {Link} from '@/i18n/navigation'
 import {useEffect} from 'react'
 import {Loader2} from 'lucide-react'
 
 export default function VdaPage() {
   const t = useTranslations()
   const {data: session, status} = useSession()
-  const locale = useLocale()
-  const isLoggedIn = status === 'authenticated'
 
   // Handle refresh token errors
   useEffect(() => {
@@ -69,34 +66,9 @@ export default function VdaPage() {
             type="text"
             className="flex-1 rounded border px-3 py-2 focus:outline-none focus:ring"
             placeholder={t('typeMessage')}
-            disabled={!isLoggedIn}
-            aria-disabled={!isLoggedIn}
-            tabIndex={isLoggedIn ? 0 : -1}
           />
-          <Button type="submit" disabled={!isLoggedIn} aria-disabled={!isLoggedIn} tabIndex={isLoggedIn ? 0 : -1}>
-            {t('send')}
-          </Button>
+          <Button type="submit">{t('send')}</Button>
         </form>
-        {!isLoggedIn && (
-          <div
-            className="absolute inset-0 bg-background/80 flex flex-col items-center justify-center z-20"
-            style={{pointerEvents: 'auto'}}
-          >
-            <Card className="w-full max-w-md p-6 text-center shadow-xl">
-              <CardHeader>
-                <CardTitle>{t('loginRequiredTitle') || 'Login Required'}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="mb-4 text-muted-foreground">
-                  {t('loginRequiredMessage') || 'You must be logged in to use the VDA.'}
-                </div>
-                <Link href="/login" locale={locale}>
-                  <Button>{t('login')}</Button>
-                </Link>
-              </CardContent>
-            </Card>
-          </div>
-        )}
       </main>
     </div>
   )
