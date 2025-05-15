@@ -30,7 +30,7 @@ export default function LogoutButton({variant = 'outline', size = 'sm'}: LogoutB
       // Extract locale from current path, fallback to 'en'
       const match = pathname.match(/^\/([a-zA-Z-]+)\//)
       const locale = match ? match[1] : 'en'
-      signOut({callbackUrl: `/${locale}/%28auth%29/login`})
+      signOut({callbackUrl: `/${locale}/login`})
     }
   }
 

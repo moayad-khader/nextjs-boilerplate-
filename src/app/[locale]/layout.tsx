@@ -1,29 +1,32 @@
+// src/app/[locale]/layout.tsx
 import {NextIntlClientProvider} from 'next-intl'
 import {notFound} from 'next/navigation'
-import ClientProviders from '@/providers/ClientProviders'
 import '@/app/globals.css'
 import {setRequestLocale} from 'next-intl/server'
 import {routing} from '@/i18n/routing'
 import DirectionController from '@/components/DirectionController'
+import messages from '@/i18n/messages'
 
 export default async function LocaleLayout({
   children,
   params,
-}: {children: React.ReactNode; params: Promise<{locale: string}>}) {
+}: {
+  children: React.ReactNode
+  params: Promise<{locale: string}>
+}) {
   const {locale} = await params
   setRequestLocale(locale)
 
-  let messages
-  try {
-    messages = (await import(`../../messages/${locale}.json`)).default
-  } catch {
+  // Check if we have messages for this locale
+  if (!messages[locale]) {
+    console.error(`No messages found for locale: ${locale}`)
     notFound()
   }
 
   return (
-    <NextIntlClientProvider locale={locale} messages={messages}>
+    <NextIntlClientProvider locale={locale} messages={messages[locale]}>
       <DirectionController />
-      <ClientProviders>{children}</ClientProviders>
+      {children}
     </NextIntlClientProvider>
   )
 }

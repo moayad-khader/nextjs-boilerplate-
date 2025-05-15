@@ -17,10 +17,7 @@ export const metadata = {
 
 export default async function RootLayout({children}: {children: ReactNode}) {
   const h = await headers()
-
-  // Get locale directly from next-intl middleware
   const locale = h.get('x-next-intl-locale') || defaultLocale
-
   const dir = RTL_LOCALES.includes(locale) ? 'rtl' : 'ltr'
 
   return (
