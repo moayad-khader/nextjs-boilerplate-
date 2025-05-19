@@ -1,8 +1,8 @@
 'use client'
-import {useTranslations, useLocale} from 'next-intl'
+import {useTranslations, useLocale} from 'use-intl'
 import {Button} from '@/components/ui/button'
 import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card'
-import {Link} from '@/i18n/navigation'
+import Link from 'next/link'
 import {useSearchParams} from 'next/navigation'
 
 export default function ErrorPage() {
@@ -10,6 +10,8 @@ export default function ErrorPage() {
   const locale = useLocale()
   const searchParams = useSearchParams()
   const error = searchParams.get('error')
+
+  const loginHref = `/${locale}/login`
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient">
@@ -26,7 +28,7 @@ export default function ErrorPage() {
             <p className="mb-6 text-gray-700">
               {error || t('authError') || 'There was a problem with your authentication.'}
             </p>
-            <Link href="/login" locale={locale}>
+            <Link href={loginHref}>
               <Button className="w-full hover:opacity-90">{t('backToLogin') || 'Back to Login'}</Button>
             </Link>
           </CardContent>

@@ -50,6 +50,8 @@
   --background: oklch(0.96 0.0179 196.86);     /* #e6f7f7 */
   --background-end: oklch(0.94 0.0347 187.69);  /* #d2f3ef */
   --background-gradient: linear-gradient(135deg, var(--background) 0%, var(--background-end) 100%);
+  --background-gradient-light: linear-gradient(0.25turn, #e6f7f7 , #fff,  #f6fafa );
+
   --button-gradient: linear-gradient(90deg, var(--primary), var(--secondary));
   --foreground: #222;
   --card: oklch(1 0 0);
@@ -118,6 +120,10 @@
 
 .bg-gradient {
   background: var(--background-gradient);
+}
+
+.bg-gradient-light {
+  background: var(--background-gradient-light);
 }
 
 .button-gradient {

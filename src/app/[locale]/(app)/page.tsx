@@ -1,5 +1,5 @@
-import VdaPage from './vda/page'
+import HomePage from './home/page'
 
 export default function Home() {
-  return <VdaPage />
+  return <HomePage />
 }

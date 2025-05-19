@@ -1,69 +1,74 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getToken } from 'next-auth/jwt';
-import createIntlMiddleware from 'next-intl/middleware';
-import { routing } from './src/i18n/routing';
+import { AVAILABLE_LOCALES, DEFAULT_LOCALE } from './src/i18n'; 
 
 const nextAuthSecret = process.env.NEXTAUTH_SECRET;
 
 export async function middleware(request: NextRequest) {
-  const { pathname, origin } = request.nextUrl;
+  const { pathname } = request.nextUrl;
 
-  // Skip static files, API, Next.js internals
   if (
     pathname.startsWith('/api/') ||
     pathname.startsWith('/_next/') ||
-    pathname.includes('.')
+    pathname.startsWith('/static/') || 
+    pathname.includes('.') 
   ) {
     return NextResponse.next();
   }
 
-  // Redirect any non-locale-prefixed path to default locale
-  const firstSegment = pathname.split('/')[1];
-  if (!routing.locales.includes(firstSegment as any)) {
-    const newPath = pathname === '/' ? `/${routing.defaultLocale}` : `/${routing.defaultLocale}${pathname}`;
+ 
+  const pathSegments = pathname.split('/').filter(Boolean);
+  const firstSegment = pathSegments[0] || '';
+  
+  const isLocaleInPath = AVAILABLE_LOCALES.includes(firstSegment as any);
+  
+  if (pathname === '/' || !isLocaleInPath) {
+    const newPath = pathname === '/' 
+      ? `/${DEFAULT_LOCALE}` 
+      : `/${DEFAULT_LOCALE}${pathname.startsWith('/') ? pathname : `/${pathname}`}`;
+      
     return NextResponse.redirect(new URL(newPath, request.url));
   }
+  
+  const currentLocale = isLocaleInPath ? firstSegment : DEFAULT_LOCALE;
 
-  // Only locale-prefixed paths reach here
-  const handleI18nRouting = createIntlMiddleware({
-    locales: routing.locales,
-    defaultLocale: routing.defaultLocale,
-    localePrefix: routing.localePrefix,
-  });
-
-  const i18nResponse = handleI18nRouting(request);
-
-  let effectivePathname = pathname;
-  if (i18nResponse.headers.get('x-middleware-rewrite')) {
-    effectivePathname = new URL(i18nResponse.headers.get('x-middleware-rewrite')!).pathname;
-  } else if (i18nResponse.status === 307 || i18nResponse.status === 308) {
-    const locationHeader = i18nResponse.headers.get('location');
-    if (locationHeader) {
-      effectivePathname = new URL(locationHeader, origin).pathname;
-    }
+  if (pathname.endsWith(`/login`)) {
+    return NextResponse.next(); 
   }
 
-  // Auth check for all locale-prefixed, non-static, non-API routes
-  const token = await getToken({ req: request, secret: nextAuthSecret });
-  if (!token) {
-    let currentLocale = routing.defaultLocale;
-    const detectedLocaleFromPath = effectivePathname.split('/')[1];
-    if (routing.locales.includes(detectedLocaleFromPath as any)) {
-      currentLocale = detectedLocaleFromPath;
+  try {
+    const token = await getToken({ req: request, secret: nextAuthSecret });
+
+    if (!token) {
+      const loginRedirectUrl = new URL(`/${currentLocale}/login`, request.url);
+      
+      request.nextUrl.searchParams.forEach((value, key) => {
+        loginRedirectUrl.searchParams.set(key, value);
+      });
+      
+      const returnUrl = encodeURIComponent(request.nextUrl.pathname + request.nextUrl.search);
+      loginRedirectUrl.searchParams.set('returnUrl', returnUrl);
+      
+      return NextResponse.redirect(loginRedirectUrl);
     }
+
+    return NextResponse.next();
+  } catch (error) {
+    console.error('Auth middleware error:', error);
+    
+    if (pathname.endsWith(`/login`)) {
+      return NextResponse.next();
+    }
+    
     const loginRedirectUrl = new URL(`/${currentLocale}/login`, request.url);
-    request.nextUrl.searchParams.forEach((value, key) => {
-      loginRedirectUrl.searchParams.set(key, value);
-    });
+    loginRedirectUrl.searchParams.set('error', 'auth_error');
     return NextResponse.redirect(loginRedirectUrl);
   }
-
-  return i18nResponse;
 }
 
 export const config = {
   matcher: [
-    '/',
-    '/:path*',
+    '/((?!_next|static|api|.*\\.).*)', // Matches paths not starting with _next, static, api, or containing a dot
+    '/', // Matches the root path explicitly if not caught by the above
   ],
 };

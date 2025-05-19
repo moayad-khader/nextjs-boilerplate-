@@ -13,7 +13,7 @@
 - Zod
 - NextAuth.js
 - React Router DOM
-- next-intl (i18n)
+- use-intl (i18n)
 - Cypress (e2e testing)
 
 ## Pages
@@ -22,7 +22,7 @@
 - Login
 - Organization Settings
 - User Settings
-- Organizations (list)
+- Home (list)
 
 
 ## Getting Started
@@ -110,7 +110,7 @@ pnpm biome
 
 ### Internationalization (i18n)
 
-This project uses `next-intl` for internationalization support.
+This project uses `use-intl` for internationalization support.
 
 - Default locale: Arabic (ar)
 - Locale prefix is always included in URLs
@@ -118,7 +118,8 @@ This project uses `next-intl` for internationalization support.
 
 The i18n configuration is located in the `src/i18n` directory, with the following key files:
 - `locales.ts`: Defines supported languages and their configurations
-- `routing.ts`: Sets up internationalized routing with next-intl
+- `i18n.ts`: Configures locales and provides type definitions for `use-intl`.
+- `middleware.ts`: Handles internationalized routing using `use-intl/server`.
 
 ### Testing
 

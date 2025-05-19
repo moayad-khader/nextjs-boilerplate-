@@ -1,14 +1,15 @@
 {
-  "organizations": "المؤسسات",
+  "home": "الرئيسية",
+  "agent": "الوكيل",
+  "liveboards": "لوحات مباشرة",
+  "settings": "الإعدادات",
   "userMessage": "رسالة المستخدم",
   "agentMessage": "رسالة الوكيل",
   "narrative": "السرد",
   "send": "إرسال",
   "typeMessage": "اكتب رسالتك",
-  "vda": "نظام التحليل المرئي",
   "chatHistory": "سجل الدردشة",
   "userSettings": "إعدادات المستخدم",
-  "organizationSettings": "إعدادات المؤسسة",
   "signInTitle": "تسجيل الدخول",
   "signInSubtitle": "أدخل بريدك الإلكتروني لتسجيل الدخول",
   "usernameLabel": "البريد الإلكتروني",
@@ -21,6 +22,8 @@
   "login": "تسجيل الدخول",
   "logout": "تسجيل الخروج",
   "loginRequiredTitle": "مطلوب تسجيل الدخول",
-  "loginRequiredMessage": "يجب عليك تسجيل الدخول لاستخدام نظام التحليل المرئي.",
-  "loading": "جارِ التحميل..."
-} 
+  "loginRequiredMessage": "يجب عليك تسجيل الدخول لاستخدام الوكيل.",
+  "loading": "جارِ التحميل...",
+  "errorTitle": "خطأ في المصادقة",
+  "backToLogin": "العودة إلى تسجيل الدخول"
+}

@@ -1,6 +1,6 @@
 import {redirect} from 'next/navigation'
-import {defaultLocale} from '@/i18n/routing'
+import {DEFAULT_LOCALE} from '@/i18n'
 
 export default function RootPage() {
-  redirect(`/${defaultLocale}`)
+  redirect(`/${DEFAULT_LOCALE}`)
 }

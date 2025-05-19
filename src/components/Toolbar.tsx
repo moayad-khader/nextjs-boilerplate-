@@ -1,50 +1,71 @@
 'use client'
-import {useTranslations, useLocale} from 'next-intl'
-import {Link, usePathname} from '@/i18n/navigation'
-import {LanguageSelector} from './LanguageSelector'
-import {LayoutDashboard} from 'lucide-react'
+import {useTranslations, useLocale} from 'use-intl'
+import Link from 'next/link'
+import {usePathname} from 'next/navigation'
 import {useSession} from 'next-auth/react'
-import LogoutButton from './LogoutButton'
+import {useEffect} from 'react'
 
 const links = [
-  {href: '/organizations', label: 'organizations'},
-  {href: '/organization-settings', label: 'organizationSettings'},
-  {href: '/user-settings', label: 'userSettings'},
-  {href: '/login', label: 'login'},
+  {href: '/home', label: 'home' as const},
+  {href: '/agent', label: 'agent' as const},
+  {href: '/liveboards', label: 'liveboards' as const},
+  {href: '/settings', label: 'settings' as const},
 ]
 
 export default function Toolbar() {
   const pathname = usePathname()
   const locale = useLocale()
   const t = useTranslations()
-  const {data: session, status} = useSession()
+  const {status} = useSession()
   const isLoggedIn = status === 'authenticated'
 
+  useEffect(() => {
+    console.log('Current pathname:', pathname)
+    console.log('Locale:', locale)
+  }, [pathname, locale])
+
+  const isLinkActive = (linkPath: string) => {
+    const pathWithoutLocale = pathname.replace(new RegExp(`^/${locale}`), '')
+
+    if (pathWithoutLocale === linkPath) {
+      return true
+    }
+    if (pathname === `/${locale}${linkPath}`) {
+      return true
+    }
+
+    if (linkPath === '/home' && (pathWithoutLocale === '' || pathWithoutLocale === '/')) {
+      return true
+    }
+
+    const basePathWithoutLeadingSlash = linkPath.replace(/^\//, '')
+    if (basePathWithoutLeadingSlash && pathWithoutLocale.startsWith(`/${basePathWithoutLeadingSlash}/`)) {
+      return true
+    }
+
+    return false
+  }
+
   return (
-    <nav className="w-full bg-background/95 px-4 py-2 flex gap-4 items-center shadow-sm backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <Link
-        href="/"
-        locale={locale}
-        className="flex items-center gap-2 font-bold text-lg mr-4 text-primary hover:text-primary/80 focus-visible:underline focus-visible:outline-none transition-colors"
-        aria-label="Go to homepage"
-      >
-        <LayoutDashboard className="w-6 h-6 text-primary" aria-hidden="true" />
-        <span>TalkToYourData</span>
-      </Link>
-      <div className="flex gap-2">
+    <nav className="sticky top-0 z-50 w-full bg-gradient-light px-4 py-5 flex gap-4 items-center shadow-sm backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      {/* ... logo ... */}
+      <div className="relative flex gap-6">
         {links
           .filter(link => !(link.href === '/login' && isLoggedIn))
           .map(link => {
-            const isActive = pathname === link.href
+            const isActive = isLinkActive(link.href)
+            // Create localized href with the current locale
+            const hrefWithLocale = `/${locale}${link.href}`
+
             return (
               <Link
                 key={link.href}
-                href={link.href}
-                locale={locale}
+                href={hrefWithLocale}
                 className={
-                  isActive
-                    ? 'text-primary font-semibold underline underline-offset-4'
-                    : 'text-muted-foreground hover:text-primary focus-visible:underline focus-visible:outline-none transition-colors'
+                  'px-4 py-2 rounded-md font-semibold transition-all duration-200 ' +
+                  (isActive
+                    ? 'text-primary bg-white shadow-md'
+                    : 'text-muted-foreground hover:text-primary hover:bg-white/30')
                 }
                 aria-current={isActive ? 'page' : undefined}
               >
@@ -52,15 +73,6 @@ export default function Toolbar() {
               </Link>
             )
           })}
-      </div>
-      <div className="ml-auto flex items-center gap-2 w-60 justify-end">
-        <LanguageSelector />
-        {status === 'loading' ? null : isLoggedIn ? (
-          <>
-            {session?.user?.name && <span className="text-sm text-muted-foreground mr-2">{session.user.name}</span>}
-            <LogoutButton />
-          </>
-        ) : null}
       </div>
     </nav>
   )

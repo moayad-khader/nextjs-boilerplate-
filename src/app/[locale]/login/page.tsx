@@ -1,37 +1,62 @@
 'use client'
-import {useState} from 'react'
+import {useState, useEffect} from 'react'
 import {Button} from '@/components/ui/button'
 import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card'
 import {signIn} from 'next-auth/react'
-import {useTranslations, useLocale} from 'next-intl'
+import {useTranslations, useLocale} from 'use-intl'
 import {EyeIcon, EyeOffIcon} from 'lucide-react'
+import {useSearchParams, useRouter} from 'next/navigation'
 
 export default function LoginPage() {
   const t = useTranslations()
   const locale = useLocale()
+  const searchParams = useSearchParams()
+  const router = useRouter()
+
   const [username, setUsername] = useState('')
   const [isHidden, setIsHidden] = useState(true)
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
+  const returnUrl = searchParams.get('returnUrl')
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
     setError(null)
-    const res = await signIn('credentials', {
-      username,
-      password,
-      redirect: false,
-      callbackUrl: `/${locale}`,
-    })
-    if (res && res.error) {
-      setError(t('signInError') || 'Invalid credentials')
-    } else if (res && res.ok) {
-      window.location.href = res.url || `/${locale}`
+
+    try {
+      const res = await signIn('credentials', {
+        username,
+        password,
+        redirect: false,
+        callbackUrl: returnUrl ? decodeURIComponent(returnUrl) : `/${locale}`,
+      })
+
+      if (res && res.error) {
+        setError(t('signInError') || 'Invalid credentials')
+      } else if (res && res.ok) {
+        if (returnUrl) {
+          router.push(decodeURIComponent(returnUrl))
+        } else {
+          router.push(`/${locale}`)
+        }
+      }
+    } catch (err) {
+      console.error('Login error:', err)
+      setError(t('signInError') || 'An error occurred during login')
+    } finally {
+      setLoading(false)
     }
-    setLoading(false)
   }
+
+  useEffect(() => {
+    const errorParam = searchParams.get('error')
+    if (errorParam) {
+      setError(t('authError') || 'Authentication error')
+    }
+  }, [searchParams, t])
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient">
