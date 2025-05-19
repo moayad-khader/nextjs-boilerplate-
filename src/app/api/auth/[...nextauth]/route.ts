@@ -3,18 +3,22 @@ import CredentialsProvider from 'next-auth/providers/credentials'
 import {JWT} from 'next-auth/jwt'
 import {API_BASE_URL} from '@/lib/config'
 
-type CookieStringType = string | undefined | null
-
-function getRefreshTokenFromCookie(cookiesString: CookieStringType): string | null {
-  if (!cookiesString) {
+function parseRefreshTokenFromSetCookieHeader(setCookieValue: string | null | undefined): string | null {
+  if (!setCookieValue) {
     return null
   }
-  const cookies = cookiesString.split(';').map((c: string) => c.trim())
-  const refreshCookie = cookies.find((c: string) => c.startsWith('refresh_token='))
-  if (!refreshCookie) {
-    return null
+  const cookies = setCookieValue.split(/,\\s*/)
+  for (const cookieStr of cookies) {
+    const parts = cookieStr.split(';')
+    const tokenPart = parts.find(part => part.trim().startsWith('refresh_token='))
+    if (tokenPart) {
+      const token = tokenPart.split('=')[1]
+      if (token) {
+        return token.trim()
+      }
+    }
   }
-  return refreshCookie.split('=')[1]
+  return null
 }
 
 async function refreshAccessToken(token: JWT): Promise<JWT> {
@@ -37,9 +41,9 @@ async function refreshAccessToken(token: JWT): Promise<JWT> {
       ...token,
       accessToken: data.access_token,
       accessTokenExpires: Date.now() + data.expires_in * 1000,
+      refreshToken: data.refresh_token ?? token.refreshToken,
     }
   } catch {
-    // If refresh fails, return the original token with an error flag
     return {
       ...token,
       error: 'RefreshAccessTokenError',
@@ -76,23 +80,19 @@ const handler = NextAuth({
           }
 
           const data = await res.json()
-          const isOnServer = typeof window === 'undefined'
-          const refreshToken = isOnServer
-            ? getRefreshTokenFromCookie(res.headers.get('set-cookie'))
-            : getRefreshTokenFromCookie(document.cookie)
+          const setCookieHeader = res.headers.get('set-cookie')
+          const refreshToken = parseRefreshTokenFromSetCookieHeader(setCookieHeader)
 
           if (data?.access_token) {
             return {
               id: credentials.username,
               accessToken: data.access_token,
-              refreshToken,
+              refreshToken: refreshToken,
               accessTokenExpires: Date.now() + data.expires_in * 1000,
             }
           }
-
           return null
         } catch {
-          // FIXME: Add error handling
           return null
         }
       },
@@ -103,17 +103,17 @@ const handler = NextAuth({
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   callbacks: {
-    async jwt({token, user}) {
-      if (user) {
+    async jwt({token, user, account}) {
+      if (account && user) {
         return {
-          ...token,
           accessToken: user.accessToken,
-          refreshToken: user.refreshToken,
-          accessTokenExpires: user.accessTokenExpires,
+          accessTokenExpires: (user as any).accessTokenExpires,
+          refreshToken: (user as any).refreshToken,
+          user: user,
         }
       }
 
-      if (typeof token.accessTokenExpires === 'number' && Date.now() < token.accessTokenExpires) {
+      if (Date.now() < (token.accessTokenExpires as number)) {
         return token
       }
 
@@ -121,18 +121,18 @@ const handler = NextAuth({
     },
 
     async session({session, token}) {
-      session.accessToken = token.accessToken
-
+      session.accessToken = token.accessToken as string
       if (token.error) {
-        session.error = token.error
+        session.error = token.error as 'RefreshAccessTokenError'
       }
-
+      // If you want to expose the whole user object to the session, uncomment next line
+      // session.user = token.user as any;
       return session
     },
   },
   pages: {
-    signIn: '/[locale]/(auth)/login',
-    error: '/[locale]/(auth)/error',
+    signIn: '/ar/login',
+    error: '/ar/error',
   },
 })
 

@@ -1,7 +1,7 @@
 'use client'
 
 import {signOut} from 'next-auth/react'
-import {useTranslations} from 'next-intl'
+import {useTranslations, useLocale} from 'use-intl'
 import {Button} from '@/components/ui/button'
 import {API_BASE_URL} from '@/lib/config'
 
@@ -12,6 +12,7 @@ interface LogoutButtonProps {
 
 export default function LogoutButton({variant = 'outline', size = 'sm'}: LogoutButtonProps) {
   const t = useTranslations()
+  const locale = useLocale()
 
   const handleLogout = async () => {
     try {
@@ -22,10 +23,12 @@ export default function LogoutButton({variant = 'outline', size = 'sm'}: LogoutB
           'Content-Type': 'application/json',
         },
       })
-    } catch {
-      // FIXME: Add error handling
+    } catch (error) {
+      // TODO: Add proper error handling/logging
+      console.error('Logout API call failed:', error)
     } finally {
-      signOut({callbackUrl: '/'})
+      // Use the locale from useLocale() for the callbackUrl
+      signOut({callbackUrl: `/${locale}/login`})
     }
   }
 

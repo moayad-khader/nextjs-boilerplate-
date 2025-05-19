@@ -27,5 +27,6 @@
     "public/locales",
     "src/i18n",
     "src/messages"
-  ]
+  ],
+  "i18n-ally.keystyle": "nested"
 }

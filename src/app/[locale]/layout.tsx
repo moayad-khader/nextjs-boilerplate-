@@ -1,35 +1,42 @@
-import {NextIntlClientProvider} from 'next-intl'
 import {notFound} from 'next/navigation'
-import ClientProviders from '@/providers/ClientProviders'
 import '@/app/globals.css'
-import {setRequestLocale} from 'next-intl/server'
-import {routing} from '@/i18n/routing'
-import DirectionController from '@/components/DirectionController'
-import Toolbar from '@/components/Toolbar'
+import {AVAILABLE_LOCALES} from '@/i18n'
+import IntlClientProvider from '@/components/IntlClientProvider'
+
+async function getMessages(locale: string) {
+  try {
+    return (await import(`@/messages/${locale}.json`)).default
+  } catch (_error) {
+    notFound()
+  }
+}
 
 export default async function LocaleLayout({
   children,
   params,
-}: {children: React.ReactNode; params: Promise<{locale: string}>}) {
+}: {
+  children: React.ReactNode
+  params: {locale: string}
+}) {
   const {locale} = await params
-  setRequestLocale(locale)
 
-  let messages
-  try {
-    messages = (await import(`../../messages/${locale}.json`)).default
-  } catch {
+  if (!AVAILABLE_LOCALES.includes(locale as any)) {
     notFound()
   }
 
+  const messages = await getMessages(locale)
+
   return (
-    <NextIntlClientProvider locale={locale} messages={messages}>
-      <DirectionController />
-      <Toolbar />
-      <ClientProviders>{children}</ClientProviders>
-    </NextIntlClientProvider>
+    <html lang={locale} dir={locale === 'ar' ? 'rtl' : 'ltr'}>
+      <body>
+        <IntlClientProvider locale={locale} messages={messages}>
+          {children}
+        </IntlClientProvider>
+      </body>
+    </html>
   )
 }
 
 export function generateStaticParams() {
-  return routing.locales.map(locale => ({locale}))
+  return AVAILABLE_LOCALES.map(locale => ({locale}))
 }

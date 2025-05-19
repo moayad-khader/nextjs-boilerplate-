@@ -1,10 +1,9 @@
 'use client'
 
 import {useState, useRef, useEffect} from 'react'
-import {useRouter} from '@/i18n/navigation'
-import {usePathname} from '@/i18n/navigation'
-import {useLocale} from 'next-intl'
-import {LOCALES, getLocaleByCode} from '@/i18n/locales'
+import {useLocale} from 'use-intl'
+import {useRouter, usePathname} from 'next/navigation'
+import {LOCALES_CONFIG, getLocaleConfigByCode, DEFAULT_LOCALE, AVAILABLE_LOCALES} from '@/i18n'
 import {Button} from '@/components/ui/button'
 import {CheckIcon, ChevronDownIcon} from 'lucide-react'
 import {cn} from '@/lib/utils'
@@ -16,10 +15,22 @@ export function LanguageSelector() {
   const currentLocale = useLocale()
   const dropdownRef = useRef<HTMLDivElement>(null)
 
-  const currentLocaleConfig = getLocaleByCode(currentLocale) || LOCALES[0]
+  const currentLocaleConfig = getLocaleConfigByCode(currentLocale) || getLocaleConfigByCode(DEFAULT_LOCALE)!
 
-  const handleLanguageChange = (locale: string) => {
-    router.replace(pathname, {locale})
+  const handleLanguageChange = (newLocale: string) => {
+    const pathSegments = pathname.split('/').filter(Boolean)
+    let newPath = '/' + newLocale
+
+    if (pathSegments.length > 0) {
+      const currentLocaleIndex = AVAILABLE_LOCALES.includes(pathSegments[0] as any) ? 1 : 0
+      const routeSegments = pathSegments.slice(currentLocaleIndex)
+
+      if (routeSegments.length > 0) {
+        newPath += '/' + routeSegments.join('/')
+      }
+    }
+
+    router.push(newPath)
     setIsOpen(false)
   }
 
@@ -47,18 +58,18 @@ export function LanguageSelector() {
       {isOpen && (
         <div className="absolute z-[100000] mt-1 w-full bg-background rounded-md shadow-lg border">
           <div className="py-1">
-            {LOCALES.map(locale => (
+            {LOCALES_CONFIG.map(localeConfig => (
               <button
-                key={locale.code}
+                key={localeConfig.code}
                 className={cn(
                   'flex items-center w-full px-4 py-2 text-sm hover:bg-accent',
-                  locale.code === currentLocale ? 'bg-accent/50' : '',
+                  localeConfig.code === currentLocale ? 'bg-accent/50' : '',
                 )}
-                onClick={() => handleLanguageChange(locale.code)}
+                onClick={() => handleLanguageChange(localeConfig.code)}
               >
-                <span className="mr-2">{locale.flag}</span>
-                <span className="flex-1 text-left">{locale.nativeName}</span>
-                {locale.code === currentLocale && <CheckIcon className="h-4 w-4" />}
+                <span className="mr-2">{localeConfig.flag}</span>
+                <span className="flex-1 text-left">{localeConfig.nativeName}</span>
+                {localeConfig.code === currentLocale && <CheckIcon className="h-4 w-4" />}
               </button>
             ))}
           </div>
