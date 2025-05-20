@@ -39,17 +39,18 @@ export default function HomePage() {
         <h1 className="text-4xl font-bold text-gray-800 mb-2">Welcome {userName}!</h1>
         <h2 className="text-xl text-gray-600">Start Your Journey Here!</h2>
       </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl ml-4">
-        {categories.map(category => (
-          <Link
-            key={category.name}
-            href={category.href}
-            className="bg-white rounded-xl shadow-sm p-8 hover:shadow-md transition-shadow"
-          >
-            <h3 className="text-xl font-medium text-gray-800">{category.name}</h3>
-          </Link>
-        ))}
+      <div className="flex justify-center">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl">
+          {categories.map(category => (
+            <Link
+              key={category.name}
+              href={category.href}
+              className="bg-white rounded-2xl shadow-md p-12 hover:shadow-lg transition-shadow min-h-[160px] flex items-center justify-center"
+            >
+              <h3 className="text-2xl font-semibold text-gray-800">{category.name}</h3>
+            </Link>
+          ))}
+        </div>
       </div>
     </div>
   )
