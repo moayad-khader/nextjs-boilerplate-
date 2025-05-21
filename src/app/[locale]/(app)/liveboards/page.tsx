@@ -6,10 +6,7 @@ import {useTranslations} from 'use-intl'
 export default function LiveboardsPage() {
   const t = useTranslations()
   return (
-    <div className="flex min-h-screen items-center justify-center"
-    style={{
-      background: 'linear-gradient(60deg, #ddf3f1 0%, #ffffff 50%, #ddf3f1 100%)'
-      }}
+    <div className="bg-gradient-light flex min-h-screen items-center justify-center"
     >
       <Card className="w-full max-w-2xl p-6">
         <CardHeader>

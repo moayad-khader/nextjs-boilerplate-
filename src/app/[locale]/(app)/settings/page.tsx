@@ -11,11 +11,7 @@ export default function SettingsPage() {
   const {data: session, status} = useSession()
   const isLoggedIn = status === 'authenticated'
   return (
-    <div className="p-4 space-y-6" 
-    style={{
-      background: 'linear-gradient(60deg, #ddf3f1 0%, #ffffff 50%, #ddf3f1 100%)'
-      }}
-    >
+    <div className="bg-gradient-light p-4 space-y-6" >
       <h1 className="text-xl font-semibold">{t('settings')}</h1>
 
       <Card>

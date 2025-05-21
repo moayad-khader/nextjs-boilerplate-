@@ -48,11 +48,7 @@ export default function Toolbar() {
 
   return (
     <nav
-      className="sticky top-0 z-50 w-full px-4 py-5 flex gap-4 items-center shadow-sm backdrop-blur supports-[backdrop-filter]:bg-background/60"
-      style={{
-      background: 'linear-gradient(60deg, #f2fbfa 0%, #ffffff 50%, #f2fbfa 100%)'
-      }}
-    >
+      className="bg-gradient-light-topbar sticky top-0 z-50 w-full px-4 py-5 flex gap-4 items-center shadow-sm backdrop-blur supports-[backdrop-filter]:bg-background/60">
       {/* ... logo ... */}
       <div className="relative flex gap-6">
         {links
