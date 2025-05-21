@@ -2,14 +2,16 @@
 
 import {useState, useRef, useEffect} from 'react'
 import {Mic, Send} from 'lucide-react'
+import { cn } from '@/lib/utils'
 
 interface ChatInputProps {
   isRecording: boolean
   toggleRecording: () => void
   onSendMessage: (text: string) => void
+  className?: string
 }
 
-export default function ChatInput({isRecording, toggleRecording, onSendMessage}: ChatInputProps) {
+export default function ChatInput({isRecording, toggleRecording, onSendMessage, className}: ChatInputProps) {
   const [inputValue, setInputValue] = useState('')
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -27,7 +29,7 @@ export default function ChatInput({isRecording, toggleRecording, onSendMessage}:
 
   if (isRecording) {
     return (
-      <div className="max-w-2xl mx-auto w-full">
+      <div className={cn("max-w-2xl mx-auto w-full", className)}>
         <div className="relative bg-white rounded-full p-4 shadow-sm flex items-center justify-center">
           <div className="flex items-center space-x-1">
             {Array.from({length: 9}).map((_, i) => (

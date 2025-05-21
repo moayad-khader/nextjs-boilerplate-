@@ -6,7 +6,8 @@ import {useTranslations} from 'use-intl'
 export default function LiveboardsPage() {
   const t = useTranslations()
   return (
-    <div className="flex min-h-screen items-center justify-center">
+    <div className="bg-gradient-light flex min-h-screen items-center justify-center"
+    >
       <Card className="w-full max-w-2xl p-6">
         <CardHeader>
           <CardTitle>{t('liveboards')}</CardTitle>
