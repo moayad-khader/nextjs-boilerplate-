@@ -43,8 +43,7 @@ export default function LoginPage() {
           router.push(`/${locale}`)
         }
       }
-    } catch (err) {
-      console.error('Login error:', err)
+    } catch (_err) {
       setError(t('signInError') || 'An error occurred during login')
     } finally {
       setLoading(false)

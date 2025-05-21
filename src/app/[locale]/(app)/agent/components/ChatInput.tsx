@@ -1,37 +1,68 @@
 'use client'
 
-import {useState, useRef, useEffect} from 'react'
+import {useState, useRef, useEffect, Dispatch, SetStateAction} from 'react'
 import {Mic, Send} from 'lucide-react'
-import { cn } from '@/lib/utils'
+import {cn} from '@/lib/utils'
+import {useTranslations} from 'use-intl'
 
 interface ChatInputProps {
   isRecording: boolean
   toggleRecording: () => void
   onSendMessage: (text: string) => void
   className?: string
+  language: 'AR' | 'EN'
+  setLanguage: Dispatch<SetStateAction<'AR' | 'EN'>>
 }
 
-export default function ChatInput({isRecording, toggleRecording, onSendMessage, className}: ChatInputProps) {
+export default function ChatInput({
+  isRecording,
+  toggleRecording,
+  onSendMessage,
+  className,
+  language,
+  setLanguage,
+}: ChatInputProps) {
   const [inputValue, setInputValue] = useState('')
-  const inputRef = useRef<HTMLInputElement>(null)
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const t = useTranslations()
 
   useEffect(() => {
-    inputRef.current?.focus()
+    textareaRef.current?.focus()
   }, [])
+
+  const autoResizeTextarea = () => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto'
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`
+    }
+  }
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setInputValue(event.target.value)
+    autoResizeTextarea()
+  }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (inputValue.trim()) {
       onSendMessage(inputValue)
       setInputValue('')
+      setTimeout(() => autoResizeTextarea(), 0)
+    }
+  }
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault()
+      handleSubmit(event as unknown as React.FormEvent)
     }
   }
 
   if (isRecording) {
     return (
-      <div className={cn("max-w-2xl mx-auto w-full", className)}>
-        <div className="relative bg-white rounded-full p-4 shadow-sm flex items-center justify-center">
-          <div className="flex items-center space-x-1">
+      <div className={cn('max-w-2xl mx-auto w-full', className)}>
+        <div className="bg-white rounded-lg p-4 shadow-md flex flex-col items-center justify-center h-[120px]">
+          <div className="flex items-center space-x-1 mb-3">
             {Array.from({length: 9}).map((_, i) => (
               <div
                 key={i}
@@ -45,10 +76,10 @@ export default function ChatInput({isRecording, toggleRecording, onSendMessage, 
           </div>
           <button
             onClick={toggleRecording}
-            className="absolute right-3 h-8 w-8 flex items-center justify-center rounded-full bg-white text-primary hover:bg-gray-50"
+            className="h-10 w-10 flex items-center justify-center rounded-full bg-gray-200 text-primary hover:bg-gray-300 cursor-pointer"
             aria-label="Stop recording"
           >
-            <Mic size={18} />
+            <Mic size={22} />
           </button>
         </div>
       </div>
@@ -56,35 +87,64 @@ export default function ChatInput({isRecording, toggleRecording, onSendMessage, 
   }
 
   return (
-    <div className="max-w-2xl mx-auto w-full">
-      <form onSubmit={handleSubmit} className="relative">
-        <input
-          ref={inputRef}
-          type="text"
+    <div className={cn('max-w-2xl mx-auto w-full', className)}>
+      <form
+        onSubmit={handleSubmit}
+        className="relative flex flex-col w-full rounded-lg border bg-white shadow-md p-4 space-y-3"
+      >
+        <textarea
+          ref={textareaRef}
           value={inputValue}
-          onChange={e => setInputValue(e.target.value)}
-          className="w-full rounded-full border px-4 py-3 pr-12 bg-white shadow-sm placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
-          placeholder="Message PerformIT"
+          onChange={handleInputChange}
+          onKeyDown={handleKeyDown}
+          className="w-full py-2 px-3 bg-transparent focus:outline-none text-lg placeholder-muted-foreground resize-none overflow-y-auto min-h-[40px] max-h-[150px]"
+          placeholder={t('typeMessage')}
+          rows={1}
         />
-        <div className="absolute right-3 top-1/2 -translate-y-1/2">
-          {inputValue ? (
-            <button
-              type="submit"
-              className="text-primary h-8 w-8 flex items-center justify-center rounded-full hover:bg-gray-100"
-              aria-label="Send message"
-            >
-              <Send size={18} />
-            </button>
-          ) : (
+
+        <div className="flex items-center justify-between w-full">
+          <div className="flex items-center space-x-2">
             <button
               type="button"
-              onClick={toggleRecording}
-              className="text-primary h-8 w-8 flex items-center justify-center rounded-full hover:bg-gray-100"
-              aria-label="Start voice recording"
+              className={`px-3 py-1 rounded-md text-sm font-medium transition-colors cursor-pointer ${
+                language === 'AR' ? 'text-primary' : 'text-gray-500 hover:text-gray-700'
+              }`}
+              onClick={() => setLanguage('AR')}
             >
-              <Mic size={18} />
+              AR
             </button>
-          )}
+            <span className="text-gray-300">|</span>
+            <button
+              type="button"
+              className={`px-3 py-1 rounded-md text-sm font-medium transition-colors cursor-pointer ${
+                language === 'EN' ? 'text-primary' : 'text-gray-500 hover:text-gray-700'
+              }`}
+              onClick={() => setLanguage('EN')}
+            >
+              EN
+            </button>
+          </div>
+
+          <div>
+            {inputValue ? (
+              <button
+                type="submit"
+                className="bg-primary text-white h-10 w-10 flex items-center justify-center rounded-full hover:bg-primary/90 cursor-pointer"
+                aria-label="Send message"
+              >
+                <Send size={20} />
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={toggleRecording}
+                className="bg-primary text-white h-10 w-10 flex items-center justify-center rounded-full hover:bg-primary/90 cursor-pointer"
+                aria-label="Start voice recording"
+              >
+                <Mic size={20} />
+              </button>
+            )}
+          </div>
         </div>
       </form>
     </div>

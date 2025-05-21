@@ -19,11 +19,6 @@ export default function Toolbar() {
   const {status} = useSession()
   const isLoggedIn = status === 'authenticated'
 
-  useEffect(() => {
-    console.log('Current pathname:', pathname)
-    console.log('Locale:', locale)
-  }, [pathname, locale])
-
   const isLinkActive = (linkPath: string) => {
     const pathWithoutLocale = pathname.replace(new RegExp(`^/${locale}`), '')
 
@@ -47,8 +42,7 @@ export default function Toolbar() {
   }
 
   return (
-    <nav
-      className="bg-gradient-light-topbar sticky top-0 z-50 w-full px-4 py-5 flex gap-4 items-center shadow-sm backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <nav className="bg-gradient-light-topbar sticky top-0 z-50 w-full px-4 py-5 flex gap-4 items-center shadow-sm backdrop-blur supports-[backdrop-filter]:bg-background/60">
       {/* ... logo ... */}
       <div className="relative flex gap-6">
         {links

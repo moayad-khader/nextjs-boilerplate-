@@ -2,38 +2,36 @@
 import {useSession} from 'next-auth/react'
 import Link from 'next/link'
 import {Loader2} from 'lucide-react'
-import { useEffect, useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
-import { Organization, organizationsSchema } from '@/types/organization'
-
-
+import {useEffect, useState} from 'react'
+import {useQuery} from '@tanstack/react-query'
+import {Organization, organizationsSchema} from '@/types/organization'
 
 const fetchOrganizations = async (accessToken: string) => {
-    const res = await fetch('/api/user/organizations', {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    })
-    if (!res.ok) throw new Error('Failed to fetch organizations')
-    const data = organizationsSchema.safeParse(await res.json())
-    if (!data.success) {
-      console.error('Error parsing organizations:', data.error)
-    }
-    return data.data
+  const res = await fetch('/api/user/organizations', {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  })
+  if (!res.ok) {
+    throw new Error('Failed to fetch organizations')
   }
+  const data = organizationsSchema.safeParse(await res.json())
+  if (!data.success) {
+    return []
+  }
+  return data.data
+}
 
 export default function HomePage() {
   const {data: session, status} = useSession()
 
-  const { data: orgsData, isLoading: orgsLoading } = useQuery({
+  const {data: orgsData, isLoading: orgsLoading} = useQuery({
     queryKey: ['organizations', session?.accessToken],
     queryFn: () => fetchOrganizations(session!.accessToken as string),
     enabled: status === 'authenticated' && !!session?.accessToken,
   })
 
   const userName = session?.user?.name || 'ELM'
-
-  
 
   if (status === 'loading') {
     return (
@@ -47,8 +45,7 @@ export default function HomePage() {
   }
 
   return (
-    <div className="bg-gradient-light min-h-full px-16 py-20" 
-    >
+    <div className="bg-gradient-light min-h-full px-16 py-20">
       <div className="mb-16 ml-4">
         <h1 className="text-4xl font-bold text-gray-800 mb-2">Welcome {userName}!</h1>
         <h2 className="text-xl text-gray-600">Start Your Journey Here!</h2>
@@ -63,11 +60,11 @@ export default function HomePage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl">
             {orgsData.map((org: Organization) => (
               <Link
-          key={org.organization_id}
-          href={`/organizations/${org.organization_id}`}
-          className="bg-white rounded-2xl shadow-md p-12 hover:shadow-lg transition-shadow min-h-[160px] flex items-center justify-center"
+                key={org.organization_id}
+                href={`/organizations/${org.organization_id}`}
+                className="bg-white rounded-2xl shadow-md p-12 hover:shadow-lg transition-shadow min-h-[160px] flex items-center justify-center"
               >
-          <h3 className="text-2xl font-semibold text-gray-800">{org.organization_name}</h3>
+                <h3 className="text-2xl font-semibold text-gray-800">{org.organization_name}</h3>
               </Link>
             ))}
           </div>
