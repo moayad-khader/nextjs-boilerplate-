@@ -47,7 +47,11 @@ export default function HomePage() {
   }
 
   return (
-    <div className="bg-gradient-light min-h-full px-16 py-20">
+    <div className="bg-gradient-light min-h-full px-16 py-20" 
+    style={{
+      background: 'linear-gradient(60deg, #ddf3f1 0%, #ffffff 50%, #ddf3f1 100%)'
+      }}
+    >
       <div className="mb-16 ml-4">
         <h1 className="text-4xl font-bold text-gray-800 mb-2">Welcome {userName}!</h1>
         <h2 className="text-xl text-gray-600">Start Your Journey Here!</h2>

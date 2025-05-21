@@ -9,7 +9,7 @@ interface QuickSuggestionsProps {
 
 const QuickSuggestions: React.FC<QuickSuggestionsProps> = ({ quickQuestions, onQuickQuestion, className }) => {
   return (
-    <div className={cn("flex flex-wrap gap-2 justify-center", className)}>
+    <div className={cn("flex flex-wrap gap-2 justify-center my-4", className)}>
       {quickQuestions.map((question, idx) => (
         <button
           key={`second-${idx}`}

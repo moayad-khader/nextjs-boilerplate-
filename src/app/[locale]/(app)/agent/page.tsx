@@ -213,9 +213,12 @@ Would you like more detailed statistics or a breakdown by entity?
 
       <main
         className={cn(
-          "flex-1 flex flex-col bg-gradient-light h-full transition-all duration-500 justify-end",
+          "flex-1 flex flex-col h-full transition-all duration-500 justify-end",
           messages.length === 0 ? "pb-[50vh]" : "pb-16",
         )}
+      style={{
+      background: 'linear-gradient(60deg, #ddf3f1 0%, #ffffff 50%, #ddf3f1 100%)'
+      }}
       >
         {messages.length === 0 && (
           <WelcomeScreen
