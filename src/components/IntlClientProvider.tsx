@@ -17,8 +17,7 @@ export default function IntlClientProvider({
       locale={locale}
       messages={messages}
       timeZone="UTC"
-      onError={error => {
-        console.warn('Translation error:', error.message)
+      onError={_error => {
         return undefined
       }}
     >

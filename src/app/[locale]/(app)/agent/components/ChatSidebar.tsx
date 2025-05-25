@@ -1,12 +1,20 @@
 'use client'
-import {Edit} from 'lucide-react'
+import {Edit, X} from 'lucide-react'
+import {cn} from '@/lib/utils'
+import {useTranslations} from 'use-intl'
 
 type ChatHistoryPeriod = {
   title: string
   chats: string[]
 }
 
-export default function ChatSidebar() {
+interface ChatSidebarProps {
+  isOpen: boolean
+  onClose: () => void
+}
+
+export default function ChatSidebar({isOpen, onClose}: ChatSidebarProps) {
+  const t = useTranslations()
   const chatHistory: ChatHistoryPeriod[] = [
     {
       title: 'Today',
@@ -27,15 +35,27 @@ export default function ChatSidebar() {
   ]
 
   return (
-    <aside className="w-64 bg-gradient-light flex flex-col shadow-lg z-10 h-full overflow-hidden">
-      <div className="p-4 border-b border-gray-200/20 shrink-0">
-        <button className="w-full button-gradient text-white rounded-md px-4 py-2 font-medium flex items-center justify-between shadow-sm">
-          <span>New Chat</span>
+    <aside
+      className={cn(
+        'w-64 bg-gradient-light flex flex-col z-10 h-full drop-shadow-lg transition-transform duration-300 ease-in-out',
+        isOpen ? 'translate-x-0' : '-translate-x-full',
+      )}
+    >
+      <div className="p-4 border-b border-gray-200/20 shrink-0 flex items-center justify-between">
+        <button className="w-full button-gradient text-white rounded-md px-4 py-2 font-medium flex items-center justify-between shadow-sm mr-2">
+          <span>{t('newChat')}</span>
           <Edit size={18} />
+        </button>
+        <button
+          onClick={onClose}
+          className="md:hidden p-2 rounded-md hover:bg-white/20 transition-colors cursor-pointer"
+          aria-label="Close sidebar"
+        >
+          <X size={20} className="text-white" />
         </button>
       </div>
 
-      <div className="flex-1 overflow-y-auto py-2 px-4">
+      <div className="flex-1 overflow-y-auto py-2 px-4 ">
         <div className="space-y-4">
           {chatHistory.map((period, idx) => (
             <section key={idx}>

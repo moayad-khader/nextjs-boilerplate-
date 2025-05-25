@@ -25,5 +25,15 @@
   "loginRequiredMessage": "يجب عليك تسجيل الدخول لاستخدام الوكيل.",
   "loading": "جارِ التحميل...",
   "errorTitle": "خطأ في المصادقة",
-  "backToLogin": "العودة إلى تسجيل الدخول"
+  "backToLogin": "العودة إلى تسجيل الدخول",
+  "howCanIHelp": "كيف يمكنني مساعدتك اليوم؟",
+  "openSidebar": "فتح الشريط الجانبي",
+  "closeSidebar": "إغلاق الشريط الجانبي",
+  "quickQuestions":{
+    "violationsJeddah": "عدد المخالفات في جدة",
+    "violationsRiyadh": "عدد الكيانات المخالفة في الرياض",
+    "violationTypes": "نوع المخالفات"
+  },
+  "more": "أكثر",
+  "newChat": "محادثة جديدة"
 }

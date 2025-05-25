@@ -23,9 +23,8 @@ export default function LogoutButton({variant = 'outline', size = 'sm'}: LogoutB
           'Content-Type': 'application/json',
         },
       })
-    } catch (error) {
-      // TODO: Add proper error handling/logging
-      console.error('Logout API call failed:', error)
+    } catch (_error) {
+      // Error handling can be added here if needed
     } finally {
       // Use the locale from useLocale() for the callbackUrl
       signOut({callbackUrl: `/${locale}/login`})

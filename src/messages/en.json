@@ -25,5 +25,17 @@
   "logout": "Logout",
   "loginRequiredTitle": "Login Required",
   "loginRequiredMessage": "You must be logged in to use the VDA.",
-  "loading": "Loading..."
+  "loading": "Loading...",
+  "errorTitle": "Authentication Error",
+  "backToLogin": "Back to Login",
+  "howCanIHelp": "How can I help you today?",
+  "openSidebar": "Open sidebar",
+  "closeSidebar": "Close sidebar",
+  "quickQuestions":{
+    "violationsJeddah": "Number of violations in Jeddah",
+    "violationsRiyadh": "Number of violating entities in Riyadh",
+    "violationTypes": "Type of violations"
+  },
+  "more": "More",
+  "newChat": "New Chat"
 } 
