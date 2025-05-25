@@ -1,6 +1,6 @@
 'use client'
 
-import {useEffect, useState} from 'react'
+import {useEffect, useState, useCallback} from 'react'
 import {useTranslations} from 'use-intl'
 import {useSession, signIn} from 'next-auth/react'
 import {Loader2, Menu} from 'lucide-react'
@@ -23,6 +23,8 @@ export default function AgentPage() {
   const {data: session, status} = useSession()
 
   const [language, setLanguage] = useState<'AR' | 'EN'>('EN')
+
+
   const [messages, setMessages] = useState<Message[]>([])
   const [isRecording, setIsRecording] = useState(false)
   const [showSuggestions, setShowSuggestions] = useState(true)
@@ -193,9 +195,49 @@ Would you like more detailed statistics or a breakdown by entity?
     handleSendMessage(question)
   }
 
-  const toggleRecording = () => {
-    setIsRecording(!isRecording)
-  }
+
+  const handleRecording = useCallback(() => {
+    // If already recording, stop it
+    if (isRecording) {
+      setIsRecording(false);
+      return;
+    }
+
+    // Check if we're in browser environment
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    // Check if Speech_T_text is available
+    if (!window.Speech_T_text) {
+      console.error('Speech_T_text is not available');
+      return;
+    }
+
+    setIsRecording(true);
+    console.log("test:: ")
+    // Determine language code based on current language setting
+    const languageCode = language === 'AR' ? 'ar-EG' : 'en-US';
+
+    window
+      .Speech_T_text('ttyd', languageCode)
+      .then((result: string) => {
+        console.log("Speech recognition result:", result);
+
+        // If we got a result, send it as a message
+        if (result && result.trim()) {
+          handleSendMessage(result.trim());
+        }
+      })
+      .catch((error: any) => {
+        console.error('Speech recognition error:', error);
+        // You could show a toast notification here
+      })
+      .finally(() => {
+        // Always reset recording state
+        setIsRecording(false);
+      });
+  }, [language, isRecording, handleSendMessage]);
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen)
 
@@ -259,10 +301,15 @@ Would you like more detailed statistics or a breakdown by entity?
             <h2 className={cn('text-xl font-semibold text-gray-700 mb-2', messages.length > 0 && 'hidden')}>
               {t('howCanIHelp')}
             </h2>
+            {messages.length === 0 && (
+              <p className="text-sm text-gray-500 mb-3">
+                {language === 'AR' ? 'اللغة الحالية: العربية' : 'Current Language: English'}
+              </p>
+            )}
           </div>
           <ChatInput
             isRecording={isRecording}
-            toggleRecording={toggleRecording}
+            handleRecording={handleRecording}
             onSendMessage={handleSendMessage}
             language={language}
             setLanguage={setLanguage}
