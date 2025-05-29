@@ -165,10 +165,7 @@ export default function ChatInput({
                 type="button"
                 onClick={handleRecording}
                 className={cn(
-                  "h-10 w-10 flex items-center justify-center rounded-full cursor-pointer transition-colors",
-                  isRecording
-                    ? "bg-red-500 text-white animate-pulse hover:bg-red-600"
-                    : "bg-primary text-white hover:bg-primary/90"
+                  "h-10 w-10 flex items-center justify-center rounded-full cursor-pointer transition-colors bg-primary text-white hover:bg-primary/90",
                 )}
                 aria-label={isRecording ? "Stop recording" : "Start voice recording"}
               >
