@@ -1,6 +1,6 @@
 'use client'
 
-import {useEffect, useState} from 'react'
+import {useEffect, useState, useCallback} from 'react'
 import {useTranslations} from 'use-intl'
 import {useSession, signIn} from 'next-auth/react'
 import {Loader2, Menu} from 'lucide-react'
@@ -10,6 +10,7 @@ import ChatInput from './components/ChatInput'
 import {cn} from '@/lib/utils'
 import QuickSuggestions from './components/QuickSuggestions'
 import {useIsSmallScreen} from '@/hooks/useIsSmallScreen'
+import {useSpeechToText} from '@/hooks/useSpeechToText'
 
 export type Message = {
   id: string
@@ -21,13 +22,21 @@ export type Message = {
 export default function AgentPage() {
   const t = useTranslations()
   const {data: session, status} = useSession()
-
   const [language, setLanguage] = useState<'AR' | 'EN'>('EN')
   const [messages, setMessages] = useState<Message[]>([])
-  const [isRecording, setIsRecording] = useState(false)
   const [showSuggestions, setShowSuggestions] = useState(true)
   const isSmallScreen = useIsSmallScreen()
   const [isSidebarOpen, setIsSidebarOpen] = useState(!isSmallScreen)
+
+  // Speech to text hook
+  const {
+    isListening: isRecording,
+    startListening,
+    stopListening,
+    error: speechError
+  } = useSpeechToText({
+    language: language === 'AR' ? 'ar-EG' : 'en-US'
+  })
 
   useEffect(() => {
     if (session?.error === 'RefreshAccessTokenError') {
@@ -35,7 +44,7 @@ export default function AgentPage() {
     }
   }, [session])
 
-  const handleSendMessage = (text: string) => {
+  const handleSendMessage = useCallback((text: string) => {
     if (!text.trim()) {
       return
     }
@@ -187,15 +196,34 @@ Would you like more detailed statistics or a breakdown by entity?
       }
       setMessages(prev => [...prev, responseMessage])
     }, 1000)
-  }
+  }, [setShowSuggestions, setMessages])
 
   const handleQuickQuestion = (question: string) => {
     handleSendMessage(question)
   }
 
-  const toggleRecording = () => {
-    setIsRecording(!isRecording)
-  }
+  const handleRecording = useCallback(async () => {
+    // If already recording, stop it
+    if (isRecording) {
+      stopListening();
+      return;
+    }
+
+    try {
+      console.log("Starting speech recognition...");
+      const result = await startListening('ttyd');
+      
+      console.log("Speech recognition result:", result);
+      
+      // If we got a result, send it as a message
+      if (result && result.trim()) {
+        handleSendMessage(result.trim());
+      }
+    } catch (error) {
+      console.error('Speech recognition error:', error);
+      // You could show a toast notification here
+    }
+  }, [isRecording, startListening, stopListening, handleSendMessage]);
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen)
 
@@ -258,11 +286,23 @@ Would you like more detailed statistics or a breakdown by entity?
           <div className="text-center max-w-2xl mx-auto w-full px-4 pb-1">
             <h2 className={cn('text-xl font-semibold text-gray-700 mb-2', messages.length > 0 && 'hidden')}>
               {t('howCanIHelp')}
-            </h2>
+            </h2>            {messages.length === 0 && (
+              <p className="text-sm text-gray-500 mb-3">
+                {language === 'AR' ? 'اللغة الحالية: العربية' : 'Current Language: English'}
+              </p>
+            )}
+            {speechError && (
+              <div className="mb-3 p-2 bg-red-50 border border-red-200 rounded-md">
+                <p className="text-sm text-red-600">
+                  {language === 'AR' ? 'خطأ في التعرف على الصوت: ' : 'Speech recognition error: '}
+                  {speechError}
+                </p>
+              </div>
+            )}
           </div>
           <ChatInput
             isRecording={isRecording}
-            toggleRecording={toggleRecording}
+            handleRecording={handleRecording}
             onSendMessage={handleSendMessage}
             language={language}
             setLanguage={setLanguage}
