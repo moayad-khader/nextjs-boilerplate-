@@ -1,13 +1,13 @@
 'use client'
 
-import {useState, useRef, useEffect, Dispatch, SetStateAction} from 'react'
-import {Mic, Send} from 'lucide-react'
-import {cn} from '@/lib/utils'
-import {useTranslations} from 'use-intl'
+import { useState, useRef, useEffect, Dispatch, SetStateAction } from 'react'
+import { Mic, Send } from 'lucide-react'
+import { cn } from '@/lib/utils'
+import { useTranslations } from 'use-intl'
 
 interface ChatInputProps {
   isRecording: boolean
-  handleRecording: () => void
+  toggleRecording: () => void
   onSendMessage: (text: string) => void
   className?: string
   language: 'AR' | 'EN'
@@ -16,7 +16,7 @@ interface ChatInputProps {
 
 export default function ChatInput({
   isRecording,
-  handleRecording,
+  toggleRecording,
   onSendMessage,
   className,
   language,
@@ -58,14 +58,12 @@ export default function ChatInput({
     }
   }
 
-
-
   if (isRecording) {
     return (
-      <div className={cn('max-w-2xl mx-auto w-full', className)}>
+      <div className={cn('max-w-3xl mx-auto w-full', className)}>
         <div className="bg-white rounded-lg p-4 shadow-md flex flex-col items-center justify-center h-[120px]">
           <div className="flex items-center space-x-1 mb-3">
-            {Array.from({length: 9}).map((_, i) => (
+            {Array.from({ length: 9 }).map((_, i) => (
               <div
                 key={i}
                 className="w-1.5 bg-primary rounded-full animate-pulse"
@@ -77,7 +75,7 @@ export default function ChatInput({
             ))}
           </div>
           <button
-            onClick={handleRecording}
+            onClick={toggleRecording}
             className="h-10 w-10 flex items-center justify-center rounded-full bg-gray-200 text-primary hover:bg-gray-300 cursor-pointer"
             aria-label="Stop recording"
           >
@@ -89,7 +87,7 @@ export default function ChatInput({
   }
 
   return (
-    <div className={cn('max-w-2xl mx-auto w-full', className)}>
+    <div className={cn('max-w-5xl mx-auto w-full', className)}>
       <form
         onSubmit={handleSubmit}
         className="relative flex flex-col w-full rounded-lg border bg-white shadow-md p-4 space-y-3"
@@ -105,50 +103,24 @@ export default function ChatInput({
         />
 
         <div className="flex items-center justify-between w-full">
-          <div className="flex items-center">
-            {/* Enhanced Language Toggle */}
-            <div className="relative flex items-center bg-gray-100 rounded-lg p-1">
-              <button
-                type="button"
-                className={cn(
-                  "relative px-3 py-1.5 text-sm font-medium transition-all duration-200 rounded-md z-10",
-                  language === 'AR'
-                    ? 'text-white'
-                    : 'text-gray-600 hover:text-gray-800'
-                )}
-                onClick={() => {
-                  setLanguage('AR');
-                }}
-                aria-label="Switch to Arabic"
-              >
-                العربية
-              </button>
-              <button
-                type="button"
-                className={cn(
-                  "relative px-3 py-1.5 text-sm font-medium transition-all duration-200 rounded-md z-10",
-                  language === 'EN'
-                    ? 'text-white'
-                    : 'text-gray-600 hover:text-gray-800'
-                )}
-                onClick={() => {
-                  setLanguage('EN');
-                }}
-                aria-label="Switch to English"
-              >
-                English
-              </button>
-
-              {/* Sliding background indicator */}
-              <div
-                className={cn(
-                  "absolute top-1 bottom-1 bg-primary rounded-md transition-all duration-200 ease-in-out",
-                  language === 'AR'
-                    ? 'left-1 right-[50%]'
-                    : 'left-[50%] right-1'
-                )}
-              />
-            </div>
+          <div className="flex items-center space-x-2">
+            <button
+              type="button"
+              className={`px-3 py-1 rounded-md text-sm font-medium transition-colors cursor-pointer ${language === 'AR' ? 'text-primary' : 'text-gray-500 hover:text-gray-700'
+                }`}
+              onClick={() => setLanguage('AR')}
+            >
+              AR
+            </button>
+            <span className="text-gray-300">|</span>
+            <button
+              type="button"
+              className={`px-3 py-1 rounded-md text-sm font-medium transition-colors cursor-pointer ${language === 'EN' ? 'text-primary' : 'text-gray-500 hover:text-gray-700'
+                }`}
+              onClick={() => setLanguage('EN')}
+            >
+              EN
+            </button>
           </div>
 
           <div>
@@ -163,11 +135,9 @@ export default function ChatInput({
             ) : (
               <button
                 type="button"
-                onClick={handleRecording}
-                className={cn(
-                  "h-10 w-10 flex items-center justify-center rounded-full cursor-pointer transition-colors bg-primary text-white hover:bg-primary/90",
-                )}
-                aria-label={isRecording ? "Stop recording" : "Start voice recording"}
+                onClick={toggleRecording}
+                className="bg-primary text-white h-10 w-10 flex items-center justify-center rounded-full hover:bg-primary/90 cursor-pointer"
+                aria-label="Start voice recording"
               >
                 <Mic size={20} />
               </button>
