@@ -1,38 +1,38 @@
-import { generateNumberWithCommas } from "@/components/visualization/helper";
- import Highcharts from 'highcharts';
+import {generateNumberWithCommas} from '@/components/visualization/helper'
+import Highcharts from 'highcharts'
 
 export const defaultOptions: Highcharts.Options = {
   chart: {
-    type: "bar",
+    type: 'bar',
   },
   title: {
-    text: "",
+    text: '',
     style: {
-      color: "black",
-      fontSize: "14px",
+      color: 'black',
+      fontSize: '14px',
     },
   },
   xAxis: {
     categories: [],
     labels: {
       style: {
-        color: "black",
+        color: 'black',
       },
     },
     gridLineWidth: 0,
   },
   yAxis: {
     title: {
-      text: "",
+      text: '',
     },
     labels: {
       style: {
-        color: "black",
+        color: 'black',
         // color: '#848484',
       },
     },
     gridLineWidth: 0,
-    height: "100%",
+    height: '100%',
   },
   plotOptions: {
     series: {
@@ -41,11 +41,11 @@ export const defaultOptions: Highcharts.Options = {
     column: {
       dataLabels: {
         enabled: true,
-        verticalAlign: "top",
-        color: "black",
+        verticalAlign: 'top',
+        color: 'black',
         y: -30,
         formatter: function () {
-          return generateNumberWithCommas(this.y);
+          return generateNumberWithCommas(this.y)
         },
       },
     },
@@ -53,14 +53,14 @@ export const defaultOptions: Highcharts.Options = {
   legend: {
     enabled: true,
     itemStyle: {
-      color: "black",
+      color: 'black',
     },
   },
   series: [],
   tooltip: {
-    backgroundColor: "black",
+    backgroundColor: 'black',
     style: {
-      color: "white",
+      color: 'white',
     },
   },
-};
+}

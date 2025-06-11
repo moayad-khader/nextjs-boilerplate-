@@ -1,29 +1,29 @@
-import { type IVisualizationComponent } from "@/lib/factories/visualization.factory/types";
-import { BarChart, LineChart } from "@/components/visualization/elements";
+import {type IVisualizationComponent} from '@/lib/factories/visualization.factory/types'
+import {BarChart, LineChart} from '@/components/visualization/elements'
 
 class Visualization {
-  visualization: IVisualizationComponent;
+  visualization: IVisualizationComponent
 
   constructor() {
-    this.visualization = BarChart;
+    this.visualization = BarChart
   }
 
   getChart(): IVisualizationComponent {
-    return this.visualization;
+    return this.visualization
   }
 }
 
 class BarChartVisualization extends Visualization {
   constructor() {
-    super();
-    this.visualization = BarChart;
+    super()
+    this.visualization = BarChart
   }
 }
 
 class LineChartVisualization extends Visualization {
   constructor() {
-    super();
-    this.visualization = LineChart;
+    super()
+    this.visualization = LineChart
   }
 }
 
@@ -37,14 +37,14 @@ class LineChartVisualization extends Visualization {
 class VisualizationFactory {
   static createChart(visualization_type: string): Visualization {
     switch (visualization_type) {
-      case "bar":
-        return new BarChartVisualization();
+      case 'bar':
+        return new BarChartVisualization()
       case 'line':
-        return new LineChartVisualization();
+        return new LineChartVisualization()
       default:
-        return new BarChartVisualization();
+        return new BarChartVisualization()
     }
   }
 }
 
-export default VisualizationFactory;
+export default VisualizationFactory
