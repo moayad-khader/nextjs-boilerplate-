@@ -1,26 +1,43 @@
 'use client'
 
-import {useEffect, useState} from 'react'
-import {useTranslations} from 'use-intl'
-import {useSession, signIn} from 'next-auth/react'
-import {Loader2, Menu} from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { useTranslations } from 'use-intl'
+import { useSession, signIn } from 'next-auth/react'
+import { Loader2, Menu } from 'lucide-react'
 import ChatSidebar from './components/ChatSidebar'
 import MessageList from './components/MessageList'
 import ChatInput from './components/ChatInput'
-import {cn} from '@/lib/utils'
+import { cn } from '@/lib/utils'
 import QuickSuggestions from './components/QuickSuggestions'
-import {useIsSmallScreen} from '@/hooks/useIsSmallScreen'
+import { useIsSmallScreen } from '@/hooks/useIsSmallScreen'
+
+export type MessageGrpah = {
+  graphType: number
+  graphData: {
+    name: string
+    messages: number
+    responses: number
+  }[]
+}
+
+export type MessageReport = {
+  content: string
+}
 
 export type Message = {
   id: string
   type: 'user' | 'agent'
   text: string
   timestamp: Date
+  graph?: MessageGrpah
+  report?: MessageReport
 }
+
+
 
 export default function AgentPage() {
   const t = useTranslations()
-  const {data: session, status} = useSession()
+  const { data: session, status } = useSession()
 
   const [language, setLanguage] = useState<'AR' | 'EN'>('EN')
   const [messages, setMessages] = useState<Message[]>([])
@@ -64,126 +81,19 @@ export default function AgentPage() {
 A total of **42 violations** have been reported in barber shops located in Jeddah. This article provides a detailed breakdown, relevant data, and sample code for further analysis.
 
 ---
-
-## Table of Contents
-
-1. [Overview](#overview)
-2. [Violation Statistics](#violation-statistics)
-3. [Calculation Equations](#calculation-equations)
-4. [Raw JSON Data](#raw-json-data)
-5. [Sample Code](#sample-code)
-6. [Conclusion](#conclusion)
-7. [Disclaimer](#disclaimer)
-
----
-
-## Overview
-
-Barber shops in Jeddah have been subject to routine inspections, resulting in the identification of several violations. The following sections present the findings and supporting data.
-
----
-
-## Violation Statistics
-
-- **City:** Jeddah
-- **Total Violations:** 42
-
-### Breakdown by Entity
-
-| Barber Shop      | Number of Violations |
-|------------------|---------------------|
-| Barber Shop A    | 12                  |
-| Barber Shop B    | 8                   |
-| Others           | 22                  |
-
----
-
-## Calculation Equations
-
-\`\`\`text
-Total Violations = Violations_Jeddah + Violations_Riyadh
-Total Violations = 42 + 58 = 100
-\`\`\`
-
-### Advanced Equations
-
-#### Violation Percentage per Entity
-
-\`\`\`text
-Percentage_A = (Violations_A / Total_Violations_Jeddah) * 100
-Percentage_A = (12 / 42) * 100 ≈ 28.57%
-
-Percentage_B = (8 / 42) * 100 ≈ 19.05%
-\`\`\`
-
-#### Weighted Violation Index (WVI)
-
-\`\`\`text
-WVI = Σ (Violations_i × Weight_i) / Σ Weight_i
-
-Assume:
-Weight_A = 1.5, Weight_B = 1.2, Weight_Others = 1.0
-
-WVI = (12×1.5 + 8×1.2 + 22×1.0) / (1.5 + 1.2 + 1.0)
-WVI = (18 + 9.6 + 22) / 3.7 ≈ 49.6 / 3.7 ≈ 13.41
-\`\`\`
-
----
-
-## Raw JSON Data
-
-\`\`\`json
-{
-  "city": "Jeddah",
-  "violations": 42,
-  "entities": [
-    {"name": "Barber Shop A", "count": 12},
-    {"name": "Barber Shop B", "count": 8}
-  ]
-}
-\`\`\`
-
----
-
-## Sample Code
-
-\`\`\`typescript
-const violationsJeddah = 42;
-const violationsRiyadh = 58;
-const total = violationsJeddah + violationsRiyadh;
-
-const percentageA = (12 / violationsJeddah) * 100;
-const percentageB = (8 / violationsJeddah) * 100;
-
-const wvi = (
-  12 * 1.5 +
-  8 * 1.2 +
-  22 * 1.0
-) / (1.5 + 1.2 + 1.0);
-
-console.log("Total Violations:", total);
-console.log("Barber Shop A %:", percentageA.toFixed(2));
-console.log("Barber Shop B %:", percentageB.toFixed(2));
-console.log("Weighted Violation Index:", wvi.toFixed(2));
-\`\`\`
-
----
-
-## Conclusion
-
-The data indicates a significant number of violations in Jeddah's barber shops. Further investigation and targeted interventions may be necessary to address the underlying causes.
-
----
-
-## Disclaimer
-
-*This report is for demonstration purposes only. Please verify all information with official sources for the most accurate and up-to-date data.*
-
----
-
-Would you like more detailed statistics or a breakdown by entity?
         `.trim(),
         timestamp: new Date(),
+        report: {
+          content: "This is a sample report content with detailed statistics and analysis.",
+        },
+        graph: {
+          graphType: 1,
+          graphData: [
+            { name: 'Barber Shop A', messages: 12, responses: 5 },
+            { name: 'Barber Shop B', messages: 8, responses: 3 },
+            { name: 'Others', messages: 22, responses: 10 },
+          ],
+        },
       }
       setMessages(prev => [...prev, responseMessage])
     }, 1000)
@@ -266,7 +176,7 @@ Would you like more detailed statistics or a breakdown by entity?
             onSendMessage={handleSendMessage}
             language={language}
             setLanguage={setLanguage}
-            className="px-4"
+            className="px-4 min-w-4xl"
           />
           {messages.length === 0 && showSuggestions && (
             <QuickSuggestions
