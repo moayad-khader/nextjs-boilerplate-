@@ -1,5 +1,5 @@
 import {type IVisualizationComponent} from '@/lib/factories/visualization.factory/types'
-import {BarChart, LineChart} from '@/components/visualization/elements'
+import {BarChart, LineChart, PieChart} from '@/components/visualization/elements'
 
 class Visualization {
   visualization: IVisualizationComponent
@@ -27,12 +27,12 @@ class LineChartVisualization extends Visualization {
   }
 }
 
-// class PieChart extends Visualization {
-//   constructor() {
-//     super();
-//     this.chart = PieChartComponent;
-//   }
-// }
+class PieChartVisualization extends Visualization {
+  constructor() {
+    super()
+    this.visualization = PieChart
+  }
+}
 
 class VisualizationFactory {
   static createChart(visualization_type: string): Visualization {
@@ -41,6 +41,8 @@ class VisualizationFactory {
         return new BarChartVisualization()
       case 'line':
         return new LineChartVisualization()
+      case 'pie':
+        return new PieChartVisualization()
       default:
         return new BarChartVisualization()
     }
