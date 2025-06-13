@@ -1,12 +1,12 @@
 'use client'
-import {useMemo} from 'react'
-import {cn} from '@/lib/utils'
+import { useMemo } from 'react'
+import { cn } from '@/lib/utils'
 import VisualizationFactory from '@/lib/factories/visualization.factory'
-import {Props, IVisualizationComponent} from '@/lib/factories/visualization.factory/types'
+import { Props, IVisualizationComponent } from '@/lib/factories/visualization.factory/types'
 import React from 'react'
-import {Card} from '@/components/ui/card'
+import { Card } from '@/components/ui/card'
 
-function Comp<T>({visualization_type, visualization_configuration, className}: Props<T>) {
+function Comp({ visualization_type, visualization_configuration, className }: Props) {
   const ChartComponent: IVisualizationComponent = useMemo(
     () => VisualizationFactory.createChart(visualization_type).getChart(),
     [visualization_type],
