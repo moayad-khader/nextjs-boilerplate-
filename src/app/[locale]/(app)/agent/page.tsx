@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useTranslations } from 'use-intl'
 import { useSession, signIn } from 'next-auth/react'
+import { useQuery, useMutation } from '@tanstack/react-query'
 import { Loader2, Menu } from 'lucide-react'
 import ChatSidebar from './components/ChatSidebar'
 import MessageList from './components/MessageList'
@@ -10,6 +11,49 @@ import ChatInput from './components/ChatInput'
 import { cn } from '@/lib/utils'
 import QuickSuggestions from './components/QuickSuggestions'
 import { useIsSmallScreen } from '@/hooks/useIsSmallScreen'
+import { agentSessionSchema } from '@/types/agent'
+
+const startAgentSession = async (accessToken: string) => {
+  const res = await fetch('/api/agent/session', {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  })
+  if (!res.ok) {
+    throw new Error('Failed to start session')
+  }
+  const data = agentSessionSchema.safeParse(await res.json())
+  if (!data.success) {
+    throw new Error('Invalid session data')
+  }
+  const session_id = data.data.session_id
+  return session_id
+}
+
+const talkToAgent = async (sessionId: string, text: string, accessToken: string) => {
+  const res = await fetch('/api/agent/talk', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify({
+      session_id: sessionId,
+      message: text,
+    }),
+  })
+
+  console.log('Request body:', {
+    session_id: sessionId,
+    message: text,
+  })
+  if (!res.ok) {
+    console.error('Error response:', await res.text())
+    throw new Error('Failed to send message')
+  }
+  return await res.text()
+}
 
 export type MessageGrpah = {
   graphType: number
@@ -37,14 +81,15 @@ export type Message = {
 
 export default function AgentPage() {
   const t = useTranslations()
+  // biome-ignore lint/correctness/noUnusedVariables: <explanation>
   const { data: session, status } = useSession()
-
   const [language, setLanguage] = useState<'AR' | 'EN'>('EN')
   const [messages, setMessages] = useState<Message[]>([])
   const [isRecording, setIsRecording] = useState(false)
   const [showSuggestions, setShowSuggestions] = useState(true)
   const isSmallScreen = useIsSmallScreen()
   const [isSidebarOpen, setIsSidebarOpen] = useState(!isSmallScreen)
+  const [agentSessionId, setAgentSessionId] = useState<string | null>(null)
 
   useEffect(() => {
     if (session?.error === 'RefreshAccessTokenError') {
@@ -52,7 +97,7 @@ export default function AgentPage() {
     }
   }, [session])
 
-  const handleSendMessage = (text: string) => {
+  const handleSendMessage = async (text: string) => {
     if (!text.trim()) {
       return
     }
@@ -66,37 +111,17 @@ export default function AgentPage() {
     }
 
     setMessages(prev => [...prev, newMessage])
+    let sessionId = agentSessionId
+    if (!sessionId) {
+      const newSessionId = await startAgentSession(session!.accessToken as string)
+      setAgentSessionId(newSessionId)
+      sessionId = newSessionId
+    }
 
-    setTimeout(() => {
-      const responseMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        type: 'agent',
-        text: `
-# Comprehensive Report on Violations in Barber Shops
+    const result = await talkToAgent(sessionId, text.trim(), session!.accessToken as string)
+    console.log('Sending message:', text.trim())
+    console.log('Received response:', result)
 
----
-
-## Executive Summary
-
-A total of **42 violations** have been reported in barber shops located in Jeddah. This article provides a detailed breakdown, relevant data, and sample code for further analysis.
-
----
-        `.trim(),
-        timestamp: new Date(),
-        report: {
-          content: "This is a sample report content with detailed statistics and analysis.",
-        },
-        graph: {
-          graphType: 1,
-          graphData: [
-            { name: 'Barber Shop A', messages: 12, responses: 5 },
-            { name: 'Barber Shop B', messages: 8, responses: 3 },
-            { name: 'Others', messages: 22, responses: 10 },
-          ],
-        },
-      }
-      setMessages(prev => [...prev, responseMessage])
-    }, 1000)
   }
 
   const handleQuickQuestion = (question: string) => {
@@ -108,21 +133,9 @@ A total of **42 violations** have been reported in barber shops located in Jedda
   }
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen)
-
   useEffect(() => {
     setIsSidebarOpen(!isSmallScreen)
   }, [isSmallScreen])
-
-  if (status === 'loading') {
-    return (
-      <div className="flex h-full items-center justify-center">
-        <div className="flex flex-col items-center space-y-4">
-          <Loader2 className="h-10 w-10 animate-spin text-primary" />
-          <p className="text-sm text-muted-foreground">{t('loading') || 'Loading...'}</p>
-        </div>
-      </div>
-    )
-  }
 
   return (
     <div className="flex h-full bg-gradient-light relative">

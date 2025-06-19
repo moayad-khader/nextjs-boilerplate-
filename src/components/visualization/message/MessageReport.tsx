@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Message } from '../../../app/[locale]/(app)/agent/page';
 import {
     Dialog,
     DialogContent,
@@ -7,6 +6,7 @@ import {
     DialogTitle,
     DialogTrigger,
 } from '@/components/ui/dialog';
+import { Message } from '@/app/[locale]/(app)/agent/page';
 
 interface MessageReportComponentProps {
     message: Message
