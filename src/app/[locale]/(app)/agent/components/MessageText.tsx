@@ -3,12 +3,12 @@
 import React from 'react'
 import { memo, useCallback, useMemo } from 'react'
 import { marked } from 'marked'
-import type { Message } from '../page'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import rehypeKatex from 'rehype-katex'
 import rehypeHighlight from 'rehype-highlight'
 import 'katex/dist/katex.min.css' // `rehype-katex` does not import the CSS for you
+import { Message } from '@/types/message'
 
 interface MessageTextComponentProps {
     message: Message
@@ -67,6 +67,8 @@ const MemoizedMarkdown = memo(({ content, id }: { content: string; id: string })
 
 export default function MessageTextComponent({ message }: MessageTextComponentProps) {
     return (
-        <MemoizedMarkdown content={message.text} id={message.id} />
+        <>
+            {message.text && <MemoizedMarkdown content={message.text} id={message.id} />}
+        </>
     )
 }

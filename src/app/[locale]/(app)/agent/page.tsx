@@ -3,96 +3,33 @@
 import { useEffect, useState } from 'react'
 import { useTranslations } from 'use-intl'
 import { useSession, signIn } from 'next-auth/react'
-import { useQuery, useMutation } from '@tanstack/react-query'
-import { Loader2, Menu } from 'lucide-react'
+import { Menu } from 'lucide-react'
 import ChatSidebar from './components/ChatSidebar'
 import MessageList from './components/MessageList'
 import ChatInput from './components/ChatInput'
 import { cn } from '@/lib/utils'
 import QuickSuggestions from './components/QuickSuggestions'
 import { useIsSmallScreen } from '@/hooks/useIsSmallScreen'
-import { agentSessionSchema } from '@/types/agent'
-
-const startAgentSession = async (accessToken: string) => {
-  const res = await fetch('/api/agent/session', {
-    method: 'GET',
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  })
-  if (!res.ok) {
-    throw new Error('Failed to start session')
-  }
-  const data = agentSessionSchema.safeParse(await res.json())
-  if (!data.success) {
-    throw new Error('Invalid session data')
-  }
-  const session_id = data.data.session_id
-  return session_id
-}
-
-const talkToAgent = async (sessionId: string, text: string, accessToken: string) => {
-  const res = await fetch('/api/agent/talk', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${accessToken}`,
-    },
-    body: JSON.stringify({
-      session_id: sessionId,
-      message: text,
-    }),
-  })
-
-  console.log('Request body:', {
-    session_id: sessionId,
-    message: text,
-  })
-  if (!res.ok) {
-    console.error('Error response:', await res.text())
-    throw new Error('Failed to send message')
-  }
-  return await res.text()
-}
-
-export type MessageGrpah = {
-  graphType: number
-  graphData: {
-    name: string
-    messages: number
-    responses: number
-  }[]
-}
-
-export type MessageReport = {
-  content: string
-}
-
-export type Message = {
-  id: string
-  type: 'user' | 'agent'
-  text: string
-  timestamp: Date
-  graph?: MessageGrpah
-  report?: MessageReport
-}
-
-
+import { useChat } from '@/hooks/useChat'
 
 export default function AgentPage() {
   const t = useTranslations()
-  // biome-ignore lint/correctness/noUnusedVariables: <explanation>
-  const { data: session, status } = useSession()
+  const { data: session } = useSession()
   const [language, setLanguage] = useState<'AR' | 'EN'>('EN')
-  const [messages, setMessages] = useState<Message[]>([])
   const [isRecording, setIsRecording] = useState(false)
   const [showSuggestions, setShowSuggestions] = useState(true)
   const isSmallScreen = useIsSmallScreen()
   const [isSidebarOpen, setIsSidebarOpen] = useState(!isSmallScreen)
-  const [agentSessionId, setAgentSessionId] = useState<string | null>(null)
+
+  // Use the new useChat hook
+  const {
+    messages,
+    sendMessage,
+    clearChat
+  } = useChat()
 
   useEffect(() => {
-    if (session?.error === 'RefreshAccessTokenError') {
+    if (!session || session.error === 'RefreshAccessTokenError') {
       signIn()
     }
   }, [session])
@@ -101,27 +38,14 @@ export default function AgentPage() {
     if (!text.trim()) {
       return
     }
+
     setShowSuggestions(false)
 
-    const newMessage: Message = {
-      id: Date.now().toString(),
-      type: 'user',
-      text: text.trim(),
-      timestamp: new Date(),
+    try {
+      await sendMessage(text.trim())
+    } catch {
+      // Error is handled by the useChat hook
     }
-
-    setMessages(prev => [...prev, newMessage])
-    let sessionId = agentSessionId
-    if (!sessionId) {
-      const newSessionId = await startAgentSession(session!.accessToken as string)
-      setAgentSessionId(newSessionId)
-      sessionId = newSessionId
-    }
-
-    const result = await talkToAgent(sessionId, text.trim(), session!.accessToken as string)
-    console.log('Sending message:', text.trim())
-    console.log('Received response:', result)
-
   }
 
   const handleQuickQuestion = (question: string) => {
@@ -131,11 +55,16 @@ export default function AgentPage() {
   const toggleRecording = () => {
     setIsRecording(!isRecording)
   }
-
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen)
   useEffect(() => {
     setIsSidebarOpen(!isSmallScreen)
   }, [isSmallScreen])
+  // Clear chat session (useful for starting fresh sessions)
+  // biome-ignore lint/correctness/noUnusedVariables: utility function for clearing chat
+  const clearChatSession = () => {
+    clearChat()
+    setShowSuggestions(true)
+  }
 
   return (
     <div className="flex h-full bg-gradient-light relative">

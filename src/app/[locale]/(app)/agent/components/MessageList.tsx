@@ -1,12 +1,12 @@
 'use client'
 import { useCallback } from 'react'
-import type { Message } from '../page'
 
 import React from 'react'
 import { cn } from '@/lib/utils'
 import MessageTextComponent from './MessageText'
 import MessageReportComponent from './MessageReport'
 import MessageGraphComponent from './MessageGraph'
+import { Message } from '@/types/message'
 
 interface MessageListProps {
   messages: Message[]

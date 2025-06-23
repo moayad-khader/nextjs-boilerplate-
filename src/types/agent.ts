@@ -1,4 +1,5 @@
 import {z} from 'zod'
+import {messageGrpahSchema} from './message'
 
 export const agentSessionSchema = z.object({
   session_id: z.string(),
@@ -11,14 +12,7 @@ export const agentTalkResponseSchema = z.object({
   generated_sql: z.string(),
   config_json: z.object({
     generate_visualization: z.boolean(),
-    config: z.object({
-      visualization_type: z.string(),
-      y: z.array(z.union([z.number(), z.string()])),
-      x: z.array(z.union([z.number(), z.string()])),
-      title: z.string(),
-      y_label: z.array(z.string()),
-      x_label: z.string(),
-    }),
+    config: messageGrpahSchema.optional(),
   }),
 })
 

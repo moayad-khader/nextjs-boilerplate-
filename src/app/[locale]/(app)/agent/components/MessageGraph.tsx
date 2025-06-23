@@ -1,86 +1,57 @@
 "use client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { Message } from "../page";
+import { Message } from "@/types/message";
+import { Visualization } from "@/components/visualization";
+import { useMemo } from "react";
+import type { IVisualizationConfiguration, VisualizationTypes } from "@/lib/factories/visualization.factory/types";
 
-
-
-const data = [
-    {
-        name: 'Jan',
-        messages: 4000,
-        responses: 2400,
-    },
-    {
-        name: 'Feb',
-        messages: 3000,
-        responses: 1398,
-    },
-    {
-        name: 'Mar',
-        messages: 2000,
-        responses: 9800,
-    },
-    {
-        name: 'Apr',
-        messages: 2780,
-        responses: 3908,
-    },
-    {
-        name: 'May',
-        messages: 1890,
-        responses: 4800,
-    },
-    {
-        name: 'Jun',
-        messages: 2390,
-        responses: 3800,
-    },
-];
-
-type MewssageGraphComponentProps = {
+type MessageGraphComponentProps = {
     message: Message
 };
 
-export default function MessageGraphComponent({ message }: MewssageGraphComponentProps) {
+export default function MessageGraphComponent({ message }: MessageGraphComponentProps) {
+    const visualizationConfig = useMemo(() => {
+        if (!message.graph) {
+            return null;
+        }
+
+        // Transform message graph data to visualization configuration format
+        const config: IVisualizationConfiguration<any> = {
+            title: message.graph.title,
+            categories: message.graph.x.map(String), // Convert to string array for x-axis categories
+            series: message.graph.y_label.map((label) => ({
+                name: label,
+                data: message.graph!.y.map((value) => {
+                    // If we have multiple series, we need to handle the data differently
+                    // For now, assuming single series or the y data is already structured properly
+                    return typeof value === 'number' ? value : parseFloat(String(value)) || 0;
+                })
+            }))
+        };
+
+        return config;
+    }, [message.graph]);
+
+    // If no graph data, don't render anything
+    if (!message.graph || !visualizationConfig) {
+        return null;
+    }
+
     return (
         <Card className="w-full">
             <CardHeader>
-                <CardTitle>Message Analytics</CardTitle>
+                <CardTitle>{message.graph.title}</CardTitle>
                 <CardDescription>
-                    Monthly message and response statistics
+                    {message.graph.x_label && `X-axis: ${message.graph.x_label}`}
                 </CardDescription>
             </CardHeader>
-            <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                    <LineChart
-                        data={data}
-                        margin={{
-                            top: 5,
-                            right: 30,
-                            left: 20,
-                            bottom: 5,
-                        }}
-                    >
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="name" />
-                        <YAxis />
-                        <Tooltip />
-                        <Legend />
-                        <Line
-                            type="monotone"
-                            dataKey="messages"
-                            stroke="#8884d8"
-                            strokeWidth={2}
-                        />
-                        <Line
-                            type="monotone"
-                            dataKey="responses"
-                            stroke="#82ca9d"
-                            strokeWidth={2}
-                        />
-                    </LineChart>
-                </ResponsiveContainer>
+            <CardContent className="h-80">
+                <Visualization
+                    visualization_type={message.graph.visualization_type as VisualizationTypes}
+                    title={message.graph.title}
+                    visualization_configuration={visualizationConfig}
+                    className="h-full"
+                />
             </CardContent>
         </Card>
     );

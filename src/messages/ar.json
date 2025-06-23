@@ -33,7 +33,15 @@
     "violationsJeddah": "عدد المخالفات في جدة",
     "violationsRiyadh": "عدد الكيانات المخالفة في الرياض",
     "violationTypes": "نوع المخالفات"
-  },
-  "more": "أكثر",
-  "newChat": "محادثة جديدة"
+  },  "more": "أكثر",
+  "newChat": "محادثة جديدة",
+  "today": "اليوم",
+  "yesterday": "أمس",
+  "previous7Days": "آخر 7 أيام",
+  "previous30Days": "آخر 30 يوماً",
+  "older": "الأقدم",
+  "noChatsYet": "لا توجد محادثات بعد",
+  "startNewConversation": "ابدأ محادثة جديدة",
+  "errorLoadingChats": "خطأ في تحميل المحادثات",
+  "retry": "إعادة المحاولة"
 }

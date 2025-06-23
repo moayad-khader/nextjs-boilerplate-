@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Message } from '../page';
 import {
     Dialog,
     DialogContent,
@@ -7,12 +6,14 @@ import {
     DialogTitle,
     DialogTrigger,
 } from '@/components/ui/dialog';
+import { Message } from '@/types/message';
 
 interface MessageReportComponentProps {
     message: Message
 }
 
 export default function MessageReportComponent({ message }: MessageReportComponentProps) {
+    // biome-ignore lint/correctness/noUnusedVariables: <explanation>
     const [isOpen, setIsOpen] = useState(false);
 
     const reportContent = message.report?.content || 0;
