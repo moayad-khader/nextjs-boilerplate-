@@ -39,16 +39,33 @@ export function useAgent() {
     console.log('Current session ID:', sessionId)
 
     // Send the message to the agent
-    const result = await talkToAgent(
-      {
-        session_id: sessionId,
-        message: message.trim(),
-        chat_id: chatId, // Optional chat ID, can be used for context
-      },
-      session,
-    )
-    console.log('Agent response:', result)
-    return result
+    try {
+      const result = await talkToAgent(
+        {
+          session_id: sessionId,
+          message: message.trim(),
+          chat_id: chatId, // Optional chat ID, can be used for context
+        },
+        session,
+      )
+      console.log('Agent response:', result)
+      return result
+      // biome-ignore lint/correctness/noUnusedVariables: <explanation>
+    } catch (error) {
+      const newSessionId = await startAgentSession(session)
+      setAgentSessionId(newSessionId)
+      sessionId = newSessionId
+      const result = await talkToAgent(
+        {
+          session_id: sessionId,
+          message: message.trim(),
+          chat_id: chatId, // Optional chat ID, can be used for context
+        },
+        session,
+      )
+      console.log('Agent response:', result)
+      return result
+    }
   }
 
   /**

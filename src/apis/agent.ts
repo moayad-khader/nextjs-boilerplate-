@@ -77,3 +77,30 @@ export async function talkToAgent(
     // Any cleanup if necessary
   }
 }
+
+export async function getSessionState(
+  session: Session,
+  callbacks?: APICallbacks<{state: string}>,
+): Promise<{state: string}> {
+  try {
+    callbacks?.onStart?.()
+    const res = await apiFetch(
+      '/api/agent/session/state',
+      {
+        method: 'GET',
+      },
+      session,
+    )
+    if (!res.ok) {
+      throw new Error('Failed to get session state')
+    }
+    const data = await res.json()
+    callbacks?.onSuccess?.(data)
+    return data
+  } catch (error) {
+    callbacks?.onError?.(error as Error)
+    throw new Error('Failed to get session state')
+  } finally {
+    callbacks?.onFinish?.()
+  }
+}

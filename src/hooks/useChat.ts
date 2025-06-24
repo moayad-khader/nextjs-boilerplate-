@@ -5,6 +5,7 @@ import {createChat, getChatThreads} from '@/apis/chats'
 import {useAgent} from './useAgent'
 import {Message} from '@/types/message'
 import {ChatThread} from '@/types/chat'
+import {set} from 'zod'
 
 /**
  * Transform chat threads to messages
@@ -48,7 +49,7 @@ export function useChat() {
   const searchParams = useSearchParams()
   const chatId = useMemo(() => searchParams.get('chatId'), [searchParams])
 
-  const {talk} = useAgent()
+  const {talk, clearSession} = useAgent()
 
   const [messages, setMessages] = useState<Message[]>([])
   const [loading, setLoading] = useState(false)
@@ -63,7 +64,7 @@ export function useChat() {
       if (!session) {
         throw new Error('No active session')
       }
-
+      clearSession()
       const newChat = await createChat(title, session, {
         onStart: () => setLoading(true),
         onError: err => setError(err),
@@ -77,7 +78,7 @@ export function useChat() {
 
       return newChat.chat_id
     },
-    [session, searchParams, router],
+    [session, searchParams, router, clearSession],
   )
 
   /**
@@ -187,10 +188,16 @@ export function useChat() {
 
   // Fetch messages when chatId changes
   useEffect(() => {
+    if (sendingMessage) {
+      return
+    }
     if (chatId && session) {
       fetchMessages(chatId)
+    } else {
+      setMessages([]) // Clear messages if no chatId
+      setError(null) // Reset error state
     }
-  }, [chatId, session, fetchMessages])
+  }, [chatId, session, fetchMessages, sendingMessage])
 
   return {
     chatId,

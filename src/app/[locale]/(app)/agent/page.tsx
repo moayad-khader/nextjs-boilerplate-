@@ -55,6 +55,7 @@ export default function AgentPage() {
   const toggleRecording = () => {
     setIsRecording(!isRecording)
   }
+
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen)
   useEffect(() => {
     setIsSidebarOpen(!isSmallScreen)

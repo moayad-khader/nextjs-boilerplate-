@@ -1,14 +1,14 @@
 import {NextRequest, NextResponse} from 'next/server'
 import {API_BASE_URL} from '@/lib/config'
 
-export async function GET(req: NextRequest, {params}: {params: {chatId: string}}) {
+export async function GET(req: NextRequest, {params}: {params: Promise<{chatId: string}>}) {
   const accessToken = req.headers.get('authorization')?.replace(/^Bearer\s+/i, '')
 
   if (!accessToken) {
     return NextResponse.json({error: 'Unauthorized'}, {status: 401})
   }
 
-  const {chatId} = params
+  const {chatId} = await params
 
   if (!chatId) {
     return NextResponse.json({error: 'Chat ID is required'}, {status: 400})

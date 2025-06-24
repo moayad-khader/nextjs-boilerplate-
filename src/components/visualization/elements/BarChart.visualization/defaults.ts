@@ -3,7 +3,7 @@ import Highcharts from 'highcharts'
 
 export const defaultOptions: Highcharts.Options = {
   chart: {
-    type: 'bar',
+    type: 'column', // Changed from 'bar' to 'column' for vertical bars
   },
   title: {
     text: '',

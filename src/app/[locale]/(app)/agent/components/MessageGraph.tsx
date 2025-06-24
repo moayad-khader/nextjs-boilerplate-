@@ -13,20 +13,51 @@ export default function MessageGraphComponent({ message }: MessageGraphComponent
     const visualizationConfig = useMemo(() => {
         if (!message.graph) {
             return null;
+        }        // Ensure we have the required data
+        if (!message.graph.x || !message.graph.y || !message.graph.y_label) {
+            return null;
         }
 
         // Transform message graph data to visualization configuration format
-        const config: IVisualizationConfiguration<any> = {
+        const config: IVisualizationConfiguration = {
             title: message.graph.title,
             categories: message.graph.x.map(String), // Convert to string array for x-axis categories
-            series: message.graph.y_label.map((label) => ({
-                name: label,
-                data: message.graph!.y.map((value) => {
-                    // If we have multiple series, we need to handle the data differently
-                    // For now, assuming single series or the y data is already structured properly
-                    return typeof value === 'number' ? value : parseFloat(String(value)) || 0;
-                })
-            }))
+            series: message.graph.y_label.map((label, seriesIndex) => {
+                // Handle different data structures for y values
+                let seriesData: number[];
+
+                if (Array.isArray(message.graph!.y[0])) {
+                    // If y is an array of arrays (multiple series)
+                    const ySeriesData = message.graph!.y[seriesIndex];
+                    if (Array.isArray(ySeriesData)) {
+                        seriesData = ySeriesData.map(value =>
+                            typeof value === 'number' ? value : parseFloat(String(value)) || 0
+                        );
+                    } else {
+                        // Fallback: use the single value
+                        seriesData = [typeof ySeriesData === 'number' ? ySeriesData : parseFloat(String(ySeriesData)) || 0];
+                    }
+                } else {
+                    // If y is a flat array, handle based on number of series
+                    if (message.graph!.y_label.length === 1) {
+                        // Single series: use all y data
+                        seriesData = message.graph!.y.map((value) =>
+                            typeof value === 'number' ? value : parseFloat(String(value)) || 0
+                        );
+                    } else {
+                        // Multiple series with flat array: split data evenly or duplicate
+                        // For now, use the same data for all series (may need adjustment based on actual data structure)
+                        seriesData = message.graph!.y.map((value) =>
+                            typeof value === 'number' ? value : parseFloat(String(value)) || 0
+                        );
+                    }
+                }
+
+                return {
+                    name: label,
+                    data: seriesData
+                };
+            })
         };
 
         return config;
@@ -36,6 +67,7 @@ export default function MessageGraphComponent({ message }: MessageGraphComponent
     if (!message.graph || !visualizationConfig) {
         return null;
     }
+
 
     return (
         <Card className="w-full">

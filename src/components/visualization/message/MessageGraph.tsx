@@ -13,7 +13,7 @@ export default function MessageGraphComponent({ message }: MessageGraphComponent
         return null;
     }
 
-    const visualization_configuration: IVisualizationConfiguration<{ name: string; data: number[] }> = {
+    const visualization_configuration: IVisualizationConfiguration = {
         title: "Message Analytics",
         categories: message.graph.graphData.map(item => item.name),
         series: [
