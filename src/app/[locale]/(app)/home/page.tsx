@@ -1,10 +1,10 @@
 'use client'
-import {useSession} from 'next-auth/react'
+import { useSession } from 'next-auth/react'
 import Link from 'next/link'
-import {Loader2} from 'lucide-react'
-import {useEffect, useState} from 'react'
-import {useQuery} from '@tanstack/react-query'
-import {Organization, organizationsSchema} from '@/types/organization'
+import { Loader2 } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import { Organization, organizationsSchema } from '@/types/organization'
 
 const fetchOrganizations = async (accessToken: string) => {
   const res = await fetch('/api/user/organizations', {
@@ -23,9 +23,9 @@ const fetchOrganizations = async (accessToken: string) => {
 }
 
 export default function HomePage() {
-  const {data: session, status} = useSession()
+  const { data: session, status } = useSession()
 
-  const {data: orgsData, isLoading: orgsLoading} = useQuery({
+  const { data: orgsData, isLoading: orgsLoading } = useQuery({
     queryKey: ['organizations', session?.accessToken],
     queryFn: () => fetchOrganizations(session!.accessToken as string),
     enabled: status === 'authenticated' && !!session?.accessToken,

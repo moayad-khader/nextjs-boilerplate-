@@ -6,7 +6,7 @@ import {
     DialogTitle,
     DialogTrigger,
 } from '@/components/ui/dialog';
-import { Message } from '@/types/message';
+import { Message } from '@/app/[locale]/(app)/agent/page';
 
 interface MessageReportComponentProps {
     message: Message

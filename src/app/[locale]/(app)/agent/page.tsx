@@ -3,100 +3,49 @@
 import { useEffect, useState } from 'react'
 import { useTranslations } from 'use-intl'
 import { useSession, signIn } from 'next-auth/react'
-import { Loader2, Menu } from 'lucide-react'
+import { Menu } from 'lucide-react'
 import ChatSidebar from './components/ChatSidebar'
 import MessageList from './components/MessageList'
 import ChatInput from './components/ChatInput'
 import { cn } from '@/lib/utils'
 import QuickSuggestions from './components/QuickSuggestions'
 import { useIsSmallScreen } from '@/hooks/useIsSmallScreen'
-
-export type MessageGrpah = {
-  graphType: number
-  graphData: {
-    name: string
-    messages: number
-    responses: number
-  }[]
-}
-
-export type MessageReport = {
-  content: string
-}
-
-export type Message = {
-  id: string
-  type: 'user' | 'agent'
-  text: string
-  timestamp: Date
-  graph?: MessageGrpah
-  report?: MessageReport
-}
-
-
+import { useChat } from '@/hooks/useChat'
 
 export default function AgentPage() {
   const t = useTranslations()
-  const { data: session, status } = useSession()
-
+  const { data: session } = useSession()
   const [language, setLanguage] = useState<'AR' | 'EN'>('EN')
-  const [messages, setMessages] = useState<Message[]>([])
   const [isRecording, setIsRecording] = useState(false)
   const [showSuggestions, setShowSuggestions] = useState(true)
   const isSmallScreen = useIsSmallScreen()
   const [isSidebarOpen, setIsSidebarOpen] = useState(!isSmallScreen)
 
+  // Use the new useChat hook
+  const {
+    messages,
+    sendMessage,
+    clearChat
+  } = useChat()
+
   useEffect(() => {
-    if (session?.error === 'RefreshAccessTokenError') {
+    if (!session || session.error === 'RefreshAccessTokenError') {
       signIn()
     }
   }, [session])
 
-  const handleSendMessage = (text: string) => {
+  const handleSendMessage = async (text: string) => {
     if (!text.trim()) {
       return
     }
+
     setShowSuggestions(false)
 
-    const newMessage: Message = {
-      id: Date.now().toString(),
-      type: 'user',
-      text: text.trim(),
-      timestamp: new Date(),
+    try {
+      await sendMessage(text.trim())
+    } catch {
+      // Error is handled by the useChat hook
     }
-
-    setMessages(prev => [...prev, newMessage])
-
-    setTimeout(() => {
-      const responseMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        type: 'agent',
-        text: `
-# Comprehensive Report on Violations in Barber Shops
-
----
-
-## Executive Summary
-
-A total of **42 violations** have been reported in barber shops located in Jeddah. This article provides a detailed breakdown, relevant data, and sample code for further analysis.
-
----
-        `.trim(),
-        timestamp: new Date(),
-        report: {
-          content: "This is a sample report content with detailed statistics and analysis.",
-        },
-        graph: {
-          graphType: 1,
-          graphData: [
-            { name: 'Barber Shop A', messages: 12, responses: 5 },
-            { name: 'Barber Shop B', messages: 8, responses: 3 },
-            { name: 'Others', messages: 22, responses: 10 },
-          ],
-        },
-      }
-      setMessages(prev => [...prev, responseMessage])
-    }, 1000)
   }
 
   const handleQuickQuestion = (question: string) => {
@@ -108,20 +57,14 @@ A total of **42 violations** have been reported in barber shops located in Jedda
   }
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen)
-
   useEffect(() => {
     setIsSidebarOpen(!isSmallScreen)
   }, [isSmallScreen])
-
-  if (status === 'loading') {
-    return (
-      <div className="flex h-full items-center justify-center">
-        <div className="flex flex-col items-center space-y-4">
-          <Loader2 className="h-10 w-10 animate-spin text-primary" />
-          <p className="text-sm text-muted-foreground">{t('loading') || 'Loading...'}</p>
-        </div>
-      </div>
-    )
+  // Clear chat session (useful for starting fresh sessions)
+  // biome-ignore lint/correctness/noUnusedVariables: utility function for clearing chat
+  const clearChatSession = () => {
+    clearChat()
+    setShowSuggestions(true)
   }
 
   return (
