@@ -1,5 +1,5 @@
 {
-  "name": "talktoyourdata",
+  "name": "nextjs-boilerplate",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -29,7 +29,6 @@
     "react-dom": "^19.0.0",
     "react-katex": "^3.1.0",
     "react-markdown": "^10.1.0",
-    "recharts": "^2.15.3",
     "rehype-highlight": "^7.0.2",
     "rehype-katex": "^7.0.1",
     "remark-gfm": "^4.0.1",
