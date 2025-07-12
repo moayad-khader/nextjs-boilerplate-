@@ -1,5 +1,3 @@
-# TalkToYourData Frontend
-
 ## Stack
 
 - Next.js (App Router, TypeScript)
